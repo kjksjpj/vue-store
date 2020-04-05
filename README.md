@@ -20,6 +20,10 @@
 
 > 如果觉得这个项目还不错，您可以点右上角 `Star`支持一下， 谢谢！ ^_^
 
+
+**更新说明:** 项目源代码仓库在Github，此处会同步特定版本，想了解最新版本请移步[https://github.com/hai-27/vue-store](https://github.com/hai-27/vue-store)
+
+
 ## 项目简介
 
 本项目前后端分离，前端基于`Vue`+`Vue-router`+`Vuex`+`Element-ui`+`Axios`，参考小米商城实现。后端基于`Node.js(Koa框架)`+`Mysql`实现。
@@ -70,7 +74,7 @@
 
 购物车采用vuex实现，页面效果参考了小米商城的购物车。
 
-详细实现过程请看：[基于Vuex实现小米商城购物车](https://github.com/hai-27/hai-27.github.io/blob/master/page/%E5%9F%BA%E4%BA%8EVuex%E5%AE%9E%E7%8E%B0%E5%B0%8F%E7%B1%B3%E5%95%86%E5%9F%8E%E8%B4%AD%E7%89%A9%E8%BD%A6.md)
+详细实现过程请看：[基于Vuex实现小米商城购物车](https://juejin.im/post/5e660ef9518825490276748a)
 
 ### 订单结算
 
@@ -115,31 +119,31 @@ npm run build
 
 **首页**
 
-![](https://github.com/hai-27/vue-store/blob/master/public/screenshots/home.png)
+![](https://images.gitee.com/uploads/images/2020/0317/154615_cffbacfe_6502229.png "home.png")
 
 **全部商品**
 
-![](https://github.com/hai-27/vue-store/blob/master/public/screenshots/goods.png)
+![](https://images.gitee.com/uploads/images/2020/0317/154637_fa50ca7a_6502229.png "goods.png")
 
 **购物车**
 
-![](https://github.com/hai-27/vue-store/blob/master/public/screenshots/shoppingCart.png)
+![](https://images.gitee.com/uploads/images/2020/0317/154737_f0417e36_6502229.gif "shoppingCart.gif")
 
 **我的收藏**
 
-![](https://github.com/hai-27/vue-store/blob/master/public/screenshots/collect.png)
+![](https://images.gitee.com/uploads/images/2020/0317/154717_e2baa55c_6502229.png "collect.png")
 
 **我的订单**
 
-![](https://github.com/hai-27/vue-store/blob/master/public/screenshots/order.png)
+![](https://images.gitee.com/uploads/images/2020/0317/154756_5813ae89_6502229.png "order.png")
 
 **登录**
 
-![](https://github.com/hai-27/vue-store/blob/master/public/screenshots/login.png)
+![](https://images.gitee.com/uploads/images/2020/0317/154814_27bcc9f1_6502229.png "login.png")
 
 **注册**
 
-![](https://github.com/hai-27/vue-store/blob/master/public/screenshots/register.png)
+![](https://images.gitee.com/uploads/images/2020/0317/154827_2399157d_6502229.png "register.png")
 
 
 
