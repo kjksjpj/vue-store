@@ -34,7 +34,7 @@
       <div class="block">
         <el-carousel height="560px" v-if="productPicture.length>1">
           <el-carousel-item v-for="item in productPicture" :key="item.id">
-            <img style="height:560px;" :src="$target + item.product_picture" :alt="item.intro" />
+            <img style="height:560px;" :src="item.product_picture" :alt="item.intro" />
           </el-carousel-item>
         </el-carousel>
         <div v-if="productPicture.length==1">
@@ -138,7 +138,6 @@ export default {
       //   });
       let temp =  this.$store.getters.getProduct;
       for (let key of temp) {
-        console.log(key);
         if (key.product_id === val) {
           this.productDetails = key;
           break;
@@ -147,16 +146,19 @@ export default {
     },
     // 获取商品图片
     getDetailsPicture(val) {
-      this.$axios
-        .post("/api/product/getDetailsPicture", {
-          productID: val
-        })
-        .then(res => {
-          this.productPicture = res.data.ProductPicture;
-        })
-        .catch(err => {
-          return Promise.reject(err);
-        });
+      // this.$axios
+      //   .post("/api/product/getDetailsPicture", {
+      //     productID: val
+      //   })
+      //   .then(res => {
+      //     this.productPicture = res.data.ProductPicture;
+      //   })
+      //   .catch(err => {
+      //     return Promise.reject(err);
+      //   });
+      this.productPicture = val < 8 ?
+          [{"id":1,"product_id":1,"product_picture":"https://img12.360buyimg.com/n7/jfs/t1/102122/18/13501/470700/5e5cb343E3b7a3a24/8ba0657bdf8a3b01.jpg","intro":null},{"id":2,"product_id":1,"product_picture":"https://img10.360buyimg.com/n7/jfs/t1/128943/22/6807/165605/5f073986E2c820358/b7474e52a40b8c85.jpg","intro":null},{"id":3,"product_id":1,"product_picture":"https://img10.360buyimg.com/n7/jfs/t1/128943/22/6807/165605/5f073986E2c820358/b7474e52a40b8c85.jpg","intro":null},{"id":4,"product_id":1,"product_picture":"https://img10.360buyimg.com/n7/jfs/t1/128943/22/6807/165605/5f073986E2c820358/b7474e52a40b8c85.jpg","intro":null},{"id":5,"product_id":1,"product_picture":"https://img10.360buyimg.com/n7/jfs/t1/128943/22/6807/165605/5f073986E2c820358/b7474e52a40b8c85.jpg","intro":null}]
+          : [{"id":1,"product_id":1,"product_picture":"https://img10.360buyimg.com/n7/jfs/t1/91219/17/493/168232/5dae9f91Effbca0fd/d7e9312da306b726.jpg","intro":null},{"id":2,"product_id":1,"product_picture":"https://img10.360buyimg.com/n7/jfs/t1/91219/17/493/168232/5dae9f91Effbca0fd/d7e9312da306b726.jpg","intro":null},{"id":3,"product_id":1,"product_picture":"https://img10.360buyimg.com/n7/jfs/t1/91219/17/493/168232/5dae9f91Effbca0fd/d7e9312da306b726.jpg","intro":null},{"id":4,"product_id":1,"product_picture":"https://img10.360buyimg.com/n7/jfs/t1/91219/17/493/168232/5dae9f91Effbca0fd/d7e9312da306b726.jpg","intro":null},{"id":5,"product_id":1,"product_picture":"https://img10.360buyimg.com/n7/jfs/t1/91219/17/493/168232/5dae9f91Effbca0fd/d7e9312da306b726.jpg","intro":null}]
     },
     // 加入购物车
     addShoppingCart() {
@@ -174,6 +176,12 @@ export default {
           switch (res.data.code) {
             case "001":
               // 新加入购物车成功
+              // productName: "", // 商品名称
+              //     productImg: "", // 商品图片
+              // eslint-disable-next-line no-case-declarations
+                let n = parseInt(this.productID)-8;
+              res.data.shoppingCartData[0].productName = this.productID < 8 ? "桌子"+this.productID : "椅子"+n.toString();
+              res.data.shoppingCartData[0].productImg = this.productID < 8 ? "https://img13.360buyimg.com/n7/jfs/t1/100189/38/9294/334257/5e0d8aa7Ef7f71cae/cc1dd9d230bbbe8b.jpg" : "https://img13.360buyimg.com/n7/jfs/t1/116060/10/10544/393628/5ef002c9E7d99f5d5/f970c315a82468ee.jpg";
               this.unshiftShoppingCart(res.data.shoppingCartData[0]);
               this.notifySucceed(res.data.msg);
               break;

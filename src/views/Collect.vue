@@ -44,6 +44,12 @@ export default {
       })
       .then(res => {
         if (res.data.code === "001") {
+          for (let v of res.data.collectList) {
+            let n = v.product_id - 8;
+            v.product_name = v.product_id < 8 ? "桌子"+v.product_id : "椅子"+n.toString();
+            v.product_picture = v.product_id < 8 ? "https://img13.360buyimg.com/n7/jfs/t1/100189/38/9294/334257/5e0d8aa7Ef7f71cae/cc1dd9d230bbbe8b.jpg" : "https://img13.360buyimg.com/n7/jfs/t1/116060/10/10544/393628/5ef002c9E7d99f5d5/f970c315a82468ee.jpg";
+
+          }
           this.collectList = res.data.collectList;
         }
       })

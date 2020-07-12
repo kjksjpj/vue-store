@@ -85,6 +85,11 @@ export default {
   mutations: {
     setShoppingCart (state, data) {
       // 设置购物车状态
+      for (let item of data) {
+        let n = item.productID-8;
+        item.productName = item.productID < 8 ? "桌子"+item.productID : "椅子"+n.toString();
+        item.productImg = item.productID < 8 ? "https://img13.360buyimg.com/n7/jfs/t1/100189/38/9294/334257/5e0d8aa7Ef7f71cae/cc1dd9d230bbbe8b.jpg" : "https://img13.360buyimg.com/n7/jfs/t1/116060/10/10544/393628/5ef002c9E7d99f5d5/f970c315a82468ee.jpg";
+      }
       state.shoppingCart = data;
     },
     unshiftShoppingCart (state, data) {
