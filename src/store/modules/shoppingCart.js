@@ -9,8 +9,7 @@ export default {
   state: {
     shoppingCart: []
     // shoppingCart结构
-    /* 
-    shoppingCart = {
+/*    shoppingCart = {
       id: "", // 购物车id
       productID: "", // 商品id
       productName: "", // 商品名称

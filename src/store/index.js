@@ -10,13 +10,14 @@ import Vuex from 'vuex'
 
 import user from './modules/user'
 import shoppingCart from './modules/shoppingCart'
-
+import goods from './modules/goods'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   strict: true,
   modules: {
     user,
-    shoppingCart
+    shoppingCart,
+    goods
   }
 })

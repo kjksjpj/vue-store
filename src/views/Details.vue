@@ -126,16 +126,24 @@ export default {
     ...mapActions(["unshiftShoppingCart", "addShoppingCartNum"]),
     // 获取商品详细信息
     getDetails(val) {
-      this.$axios
-        .post("/api/product/getDetails", {
-          productID: val
-        })
-        .then(res => {
-          this.productDetails = res.data.Product[0];
-        })
-        .catch(err => {
-          return Promise.reject(err);
-        });
+      // this.$axios
+      //   .post("/api/product/getDetails", {
+      //     productID: val
+      //   })
+      //   .then(res => {
+      //     this.productDetails = res.data.Product[0];
+      //   })
+      //   .catch(err => {
+      //     return Promise.reject(err);
+      //   });
+      let temp =  this.$store.getters.getProduct;
+      for (let key of temp) {
+        console.log(key);
+        if (key.product_id === val) {
+          this.productDetails = key;
+          break;
+        }
+      }
     },
     // 获取商品图片
     getDetailsPicture(val) {
