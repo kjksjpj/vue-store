@@ -68,6 +68,36 @@ const routes = [
     meta: {
       requireAuth: true // 需要验证登录状态
     }
+  },
+  {
+    path: '/user',
+    name: 'User',
+    component: () => import('../views/User.vue'),
+    children: [
+      {
+        // 当 /user/:id/profile 匹配成功，
+        // UserProfile 会被渲染在 User 的 <router-view> 中
+        path: 'profile',
+        component: () => import('../components/Profile')
+      },
+      {
+        path: 'portal',
+        component: () => import('../components/Portal')
+      },
+      {
+        path: 'orderList',
+        component: () => import('../components/OrderList')
+      },
+      {
+        path: 'favorite',
+        component: () => import('../components/Favorite')
+      },
+
+
+    ],
+    meta: {
+      requireAuth: true // 需要验证登录状态
+    }
   }
 ]
 

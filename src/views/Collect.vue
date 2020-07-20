@@ -59,7 +59,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 .collect {
   background-color: #f5f5f5;
 }
