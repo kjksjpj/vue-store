@@ -58,9 +58,7 @@
                                                         data-stat-id="858e1ceec7dcdbfc"
                                                         onclick="_msq.push(['trackEvent','2d362c6178942e15-858e1ceec7dcdbfc','//www.mi.com/user/coupon?r=1595159716','pcpid','undefined']);">优惠券</a>
                   </li>
-                  <li :class="{active:isActive==13}"><a href="//www.mi.com/user/address?r=1595159716"
-                                                        data-stat-id="315e9cffaebe6549"
-                                                        onclick="_msq.push(['trackEvent','2d362c6178942e15-315e9cffaebe6549','//www.mi.com/user/address?r=1595159716','pcpid','undefined']);">收货地址</a>
+                  <li :class="{active:isActive==13}"><a href="javascript:void(0);" data-stat-id="e90282590ad08689" v-on:click="$router.push({ path: '/user/address' }),isActive=13">收货地址</a>
                   </li>
                   <li :class="{active:isActive==14}"><a href="//www.mi.com/user/redpacket?r=1595159716"
                                                         data-stat-id="9a8ab8414891ff85"
@@ -119,7 +117,7 @@
     name: "User",
     data() {
       return {
-        isActive: 2
+        isActive: 5
       };
     },
   }

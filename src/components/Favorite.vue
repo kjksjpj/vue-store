@@ -61,7 +61,7 @@
 
 <style scoped>
   .collect {
-    background-color: #f5f5f5;
+    background-color: #ffffff;
   }
   .collect .collect-header {
     height: 64px;

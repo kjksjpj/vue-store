@@ -92,8 +92,10 @@ const routes = [
         path: 'favorite',
         component: () => import('../components/Favorite')
       },
-
-
+      {
+        path: 'address',
+        component: () => import('../components/Address')
+      },
     ],
     meta: {
       requireAuth: true // 需要验证登录状态

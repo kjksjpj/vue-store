@@ -29,21 +29,11 @@
       </div>
       <div class="box-bd">
         <div class="order">
-          <!-- 我的订单头部 -->
-<!--          <div class="order-header">-->
-<!--            <div class="order-header-content">-->
-<!--              <p>-->
-<!--                <i class="el-icon-s-order" style="font-size: 30px;color: #ff6700;"></i>-->
-<!--                我的订单-->
-<!--              </p>-->
-<!--            </div>-->
-<!--          </div>-->
-          <!-- 我的订单头部END -->
-
           <!-- 我的订单主要内容 -->
           <div class="order-content" v-if="orders.length>0">
             <div class="content" v-for="(item,index) in orders" :key="index">
               <ul>
+                <el-divider></el-divider>
                 <!-- 我的订单表头 -->
                 <li class="order-info">
                   <div class="order-id">订单编号: {{item[0].order_id}}</div>
@@ -172,32 +162,10 @@
 
 <style scoped>
   .order {
-    background-color: #f5f5f5;
+    background-color: #ffffff;
     padding-bottom: 20px;
   }
 
-  /* 我的订单头部CSS */
-  .order .order-header {
-    height: 64px;
-    border-bottom: 2px solid #ff6700;
-    background-color: #fff;
-    margin-bottom: 20px;
-  }
-
-  .order .order-header .order-header-content {
-    width: 1225px;
-    margin: 0 auto;
-  }
-
-  .order .order-header p {
-    font-size: 28px;
-    line-height: 58px;
-    float: left;
-    font-weight: normal;
-    color: #424242;
-  }
-
-  /* 我的订单头部CSS END */
   .order .content {
     width: 1225px;
     margin: 0 auto;
@@ -327,23 +295,6 @@
     color: #ff6700;
     font-size: 30px;
   }
-
-  /* 订单列表CSS END */
-
-  /* 订单为空的时候显示的内容CSS */
-  /*.order .order-empty {*/
-  /*  width: 1225px;*/
-  /*  margin: 0 auto;*/
-  /*}*/
-
-  /*.order .order-empty .empty {*/
-  /*  height: 300px;*/
-  /*  padding: 0 0 130px 558px;*/
-  /*  margin: 65px 0 0;*/
-  /*  background: url(../assets/imgs/cart-empty.png) no-repeat 124px 0;*/
-  /*  color: #b0b0b0;*/
-  /*  overflow: hidden;*/
-  /*}*/
 
   .order .order-empty .empty h2 {
     margin: 70px 0 15px;
