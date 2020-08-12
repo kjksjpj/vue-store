@@ -70,6 +70,11 @@ const routes = [
     }
   },
   {
+    path: '/category',
+    name: 'Category',
+    component: () => import('../views/AllCategory.vue')
+  },
+  {
     path: '/user',
     name: 'User',
     component: () => import('../views/User.vue'),

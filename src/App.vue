@@ -75,6 +75,7 @@
             </router-link>
           </div>
           <el-menu-item index="/">首页</el-menu-item>
+          <el-menu-item index="/category" menu-trigger="hover">商品分类</el-menu-item>
           <el-menu-item index="/goods">全部商品</el-menu-item>
           <el-menu-item index="/about">关于我们</el-menu-item>
 
@@ -141,6 +142,8 @@
   export default {
     beforeUpdate() {
       this.activeIndex = this.$route.path;
+      // this.getCategory();
+
     },
     data() {
       return {
@@ -151,23 +154,13 @@
       };
     },
     created() {
+      this.getCategory();
       // 获取浏览器localStorage，判断用户是否已经登录
       if (localStorage.getItem("user")) {
         // 如果已经登录，设置vuex登录状态
         this.setUser(JSON.parse(localStorage.getItem("user")));
       }
-      /* window.setTimeout(() => {
-        this.$message({
-          duration: 0,
-          showClose: true,
-          message: `
-          <p>如果觉得这个项目还不错，</p>
-          <p style="padding:10px 0">您可以给项目源代码仓库点Star支持一下，谢谢！</p>
-          <p><a href="https://github.com/hai-27/vue-store" target="_blank">Github传送门</a></p>`,
-          dangerouslyUseHTMLString: true,
-          type: "success"
-        });
-      }, 1000 * 60); */
+      //获取所有分类，存入vuex
     },
     computed: {
       ...mapGetters(["getUser", "getNum"])
@@ -200,7 +193,7 @@
       }
     },
     methods: {
-      ...mapActions(["setUser", "setShowLogin", "setShoppingCart"]),
+      ...mapActions(["setUser", "setShowLogin", "setShoppingCart", "saveAllCategories"]),
       login() {
         // 点击登录按钮, 通过更改vuex的showLogin值显示登录组件
         this.setShowLogin(true);
@@ -225,7 +218,21 @@
           this.$router.push({path: "/goods", query: {search: this.search}});
           this.search = "";
         }
-      }
+      },
+      handleOpen(key, keyPath) {
+        console.log(key, keyPath);
+      },
+      // 向后端请求分类列表数据
+      getCategory() {
+        this.$axios
+            .get(this.$target1 + "pms/category")
+            .then(res => {
+              this.saveAllCategories(res.data.data)
+            })
+            .catch(err => {
+              console.log(err)
+            });
+      },
     }
   };
 </script>
