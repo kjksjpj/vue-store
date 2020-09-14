@@ -24,6 +24,7 @@
           <el-button size="medium" type="primary" @click="Login" style="width:100%;">登录</el-button>
         </el-form-item>
       </el-form>
+<!--      <span>您还没有账户？=></span><el-button type="text" @click="isLogin = false,isRegister=true">注册</el-button>-->
     </el-dialog>
   </div>
 </template>
@@ -64,6 +65,7 @@
         }
       };
       return {
+        isRegister: false, // 控制注册组件是否显示
         LoginUser: {
           name: "",
           pass: ""
@@ -92,45 +94,68 @@
       Login() {
         // 通过element自定义表单校验规则，校验用户输入的用户信息
         this.$refs["ruleForm"].validate(valid => {
-          // 如果通过校验开始登录
-          if (valid) {
-            this.$axios
-              .post("/api/users/login", {
-                userName: this.LoginUser.name,
-                password: this.LoginUser.pass
-              })
-              .then(res => {
-                // “001”代表登录成功，其他的均为失败
-                if (res.data.code === "001") {
-                  // 隐藏登录组件
-                  this.isLogin = false;
-                  // 登录信息存到本地
-                  let user = JSON.stringify(res.data.user);
-                  localStorage.setItem("user", user);
-                  // 登录信息存到vuex
-                  this.setUser(res.data.user);
-                  // 弹出通知框提示登录成功信息
-                  this.notifySucceed(res.data.msg);
-                } else {
-                  // 清空输入框的校验状态
-                  this.$refs["ruleForm"].resetFields();
-                  // 弹出通知框提示登录失败信息
-                  this.notifyError(res.data.msg);
-                }
-              })
-              .catch(err => {
-                return Promise.reject(err);
-              });
-          }
-          // if (valid) {
-          //   this.isLogin = false;
-          //   let user = JSON.stringify({user_id: this.LoginUser.name, username: this.LoginUser.name})
-          //   localStorage.setItem("user", user);
-          //   this.setUser({user_id: this.LoginUser.name, username: this.LoginUser.name});
-          //   this.notifySucceed("成功")
-          // }
-        });
-      }
+              // 如果通过校验开始登录
+              if (valid) {
+                this.$axios({
+                  method: 'post',
+                  url: this.$target1 + "/auth/accredit/",
+                  // responseType: 'json',
+                  withCredentials: true,
+                  params: {
+                    username: this.LoginUser.name,
+                    password: this.LoginUser.pass
+                  }
+                })
+                    .then(res => {
+                      // “0”代表登录成功，其他的均为失败
+                      if (res.data.code == 0) {
+                        this.$axios
+                            .get(this.$target1 + "/ums/member/getUserInfo", {
+                              withCredentials: true
+                            })
+                            .then(res1 => {
+                              // “0”代表发送成功，其他的均为失败
+                              if (res1.data.code == 0) {
+                                // 登录信息存到本地
+                                let user = JSON.stringify(res1.data.data);
+                                localStorage.setItem("user", user);
+                                // 登录信息存到vuex
+                                this.setUser(res1.data.data);
+                              }
+                            })
+                            .catch(err => {
+                              return Promise.reject(err);
+                            });
+                        // 隐藏登录组件
+                        this.isLogin = false;
+                        // 弹出通知框提示登录成功信息
+                        this.notifySucceed(res.data.msg);
+                      }else {
+                        // 清空输入框的校验状态
+                        this.$refs["ruleForm"].resetFields();
+                        // 弹出通知框提示登录失败信息
+                        this.notifyError(res.data.msg);
+                      }
+
+                      // if (valid) {
+                      //   this.isLogin = false;
+                      //   let user = JSON.stringify({user_id: this.LoginUser.name, username: this.LoginUser.name})
+                      //   localStorage.setItem("user", user);
+                      //   this.setUser({user_id: this.LoginUser.name, username: this.LoginUser.name});
+                      //   this.notifySucceed("成功")
+                      // }
+                    })
+                    .catch(err => {
+                  return Promise.reject(err);
+                });
+              }
+            })
+      },
+
+      // Register() {
+      //   this.isLogin = false;
+      //   this.isRegister(true);
+      // }
     }
   };
 </script>

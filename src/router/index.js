@@ -25,7 +25,20 @@ const routes = [
   {
     path: '/goods',
     name: 'Goods',
-    component: () => import('../views/Goods.vue')
+    component: () => import('../views/Goods.vue'),
+  },
+  {
+    path: '/goodsByKeyword',
+    name: 'GoodsByKeyword',
+    component: () => import('../views/GoodsByKeyword.vue'),
+  },
+  {
+    path: '/distribution',
+    name: 'Distribution',
+    component: () => import('../views/Distribution'),
+    meta: {
+      requireAuth: true // 需要验证登录状态
+    },
   },
   {
     path: '/about',
@@ -38,12 +51,17 @@ const routes = [
     component: () => import('../views/Details.vue')
   },
   {
+    path: '/goods/details/reviews',
+    name: 'reviews',
+    component: () => import('../components/ProductReviews1')
+  },
+  {
     path: '/shoppingCart',
     name: 'ShoppingCart',
     component: () => import('../views/ShoppingCart.vue'),
-    meta: {
+   /* meta: {
       requireAuth: true // 需要验证登录状态
-    }
+    }*/
   },
   {
     path: '/collect',
@@ -52,6 +70,26 @@ const routes = [
     meta: {
       requireAuth: true // 需要验证登录状态
     }
+  },
+  {
+    path:'/Settlement',
+    component: ()=> import('../views/Settlement.vue')
+  },
+  {
+    path:'/settle',
+    component:()=> import('../views/Settle.vue')
+  },
+  {
+    path:'/check',
+    component:()=> import('../views/Check.vue')
+  },
+  {
+    path:'/settle/settle2',
+    component:()=> import('../components/Settle2.vue')
+  },
+  {
+    path:'/settle/settle3',
+    component:()=> import('../components/Settle3.vue')
   },
   {
     path: '/order',
@@ -70,9 +108,36 @@ const routes = [
     }
   },
   {
-    path: '/category',
-    name: 'Category',
-    component: () => import('../views/AllCategory.vue')
+    path: '/orderList',
+    name: 'OrderList',
+    component: () => import('../views/OrderList.vue'),
+    meta: {
+      requireAuth: true // 需要验证登录状态
+    }
+  },
+  {
+    path: '/review',
+    name: 'Review',
+    component: () => import('../views/Review.vue'),
+    meta: {
+      requireAuth: true // 需要验证登录状态
+    }
+  },
+  {
+    path: '/orderDetail',
+    name: 'OrderDetail',
+    component: () => import('../views/OrderDetail.vue'),
+    meta: {
+      requireAuth: true // 需要验证登录状态
+    }
+  },
+  {
+    path: '/unpaidOrderDetail',
+    name: 'UnpaidOrderDetail',
+    component: () => import('../views/UnpaidOrderDetail.vue'),
+    meta: {
+      requireAuth: true // 需要验证登录状态
+    }
   },
   {
     path: '/user',
@@ -83,23 +148,30 @@ const routes = [
         // 当 /user/:id/profile 匹配成功，
         // UserProfile 会被渲染在 User 的 <router-view> 中
         path: 'profile',
-        component: () => import('../components/Profile')
+        component: () => import('../components/Profile'),
+      /*  meta: {
+        requireAuth: true // 需要验证登录状态
+        }*/
+
       },
       {
         path: 'portal',
         component: () => import('../components/Portal')
       },
-      {
+    /*  {
         path: 'orderList',
-        component: () => import('../components/OrderList')
-      },
+        component: () => import('../views/OrderList')
+      },*/
       {
         path: 'favorite',
         component: () => import('../components/Favorite')
       },
       {
         path: 'address',
-        component: () => import('../components/Address')
+        component: () => import('../components/Address'),
+        meta: {
+          requireAuth: true // 需要验证登录状态
+        }
       },
     ],
     meta: {
@@ -109,6 +181,7 @@ const routes = [
 ]
 
 const router = new Router({
+  mode: 'history',  //去掉url中的#
   // base: '/dist',
   // mode: 'history',
   routes

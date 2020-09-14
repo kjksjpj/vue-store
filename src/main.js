@@ -9,20 +9,31 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import VueAxios from 'vue-axios'
+
+
 
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './element-variables.scss'
 Vue.use(ElementUI);
+Vue.use(VueAxios, axios)
+
+
+
 
 // 全局函数及变量
 import Global from './Global';
 Vue.use(Global);
 
-import Axios from 'axios';
-Vue.prototype.$axios = Axios;
+import axios from 'axios';
+Vue.prototype.$axios = axios;
+axios.defaults.withCredentials = true;
+
+
+
 // 全局请求拦截器
-Axios.interceptors.request.use(
+axios.interceptors.request.use(
   config => {
     return config;
   },
@@ -33,7 +44,7 @@ Axios.interceptors.request.use(
   }
 );
 // 全局响应拦截器
-Axios.interceptors.response.use(
+axios.interceptors.response.use(
   res => {
     if (res.data.code === "401") {
       // 401表示没有登录
@@ -77,6 +88,16 @@ router.beforeResolve((to, from, next) => {
   next();
 });
 
+/**
+ *  金额初始化处理
+ * @param value 调用过滤器时，输入的文本
+ */
+Vue.filter('priceFormat',(value)=> {
+    return '￥'+value.toFixed(2)//保留两位小数
+  }
+)
+
+
 // 相对时间过滤器,把时间戳转换成时间
 // 格式: 2020-02-25 21:43:23
 Vue.filter('dateFormat', (dataStr) => {
@@ -96,6 +117,8 @@ Vue.filter('dateFormat', (dataStr) => {
   return y + '-' + timeAdd0(m) + '-' + timeAdd0(d) + ' ' + timeAdd0(h) + ':' + timeAdd0(mm) + ':' + timeAdd0(s);
 });
 
+
+
 //全局组件
 import MyMenu from './components/MyMenu';
 Vue.component(MyMenu.name, MyMenu);
@@ -105,6 +128,7 @@ import MyLogin from './components/MyLogin';
 Vue.component(MyLogin.name, MyLogin);
 import MyRegister from './components/MyRegister';
 Vue.component(MyRegister.name, MyRegister);
+
 
 Vue.config.productionTip = false;
 

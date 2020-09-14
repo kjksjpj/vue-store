@@ -11,7 +11,7 @@ import Vuex from 'vuex'
 import user from './modules/user'
 import shoppingCart from './modules/shoppingCart'
 import goods from './modules/goods'
-import category from "./modules/category";
+import shareInfo from "@/store/modules/shareInfo";
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -20,6 +20,6 @@ export default new Vuex.Store({
     user,
     shoppingCart,
     goods,
-    category
+    shareInfo
   }
 })

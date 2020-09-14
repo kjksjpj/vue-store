@@ -1,11 +1,3 @@
-<!--
- * @Description: 我的购物车页面组件
- * @Author: hai-27
- * @Date: 2020-02-20 01:55:47
- * @LastEditors: hai-27
- * @LastEditTime: 2020-02-27 13:36:42
- -->
-
 <template>
   <div class="shoppingCart">
     <!-- 购物车头部 -->
@@ -15,18 +7,32 @@
           <i class="el-icon-shopping-cart-full" style="color:#ff6700; font-weight: 600;"></i>
           我的购物车
         </p>
-        <span>温馨提示：产品是否购买成功，以最终下单为准哦，请尽快结算</span>
+        <span>温馨提示：产品是否购买成功，以最终下单为准哦，希望您购物愉快，天天开心！</span>
       </div>
     </div>
     <!-- 购物车头部END -->
 
     <!-- 购物车主要内容区 -->
-    <div class="content" v-if="getShoppingCart.length>0">
+    <div class="content" v-if="this.shoppingCart.length>0">
       <ul>
         <!-- 购物车表头 -->
         <li class="header">
-          <div class="pro-check">
-            <el-checkbox v-model="isAllCheck">全选</el-checkbox>
+          <div class="pro-check" >
+            <el-popover placement="right" v-model="visible">
+              <p>确定删除吗？</p>
+              <div style="text-align: right; margin: 10px 0 0">
+                <el-button
+                        type="primary"
+                        size="mini"
+                        @click="deleteSomeItem()"
+                >确定</el-button>
+                <el-button
+                        type="text"
+                        size="mini" @click="visible = false"
+                >取消</el-button>
+              </div>
+              <el-button slot="reference" style="margin-left: 20px">删除选中商品</el-button>
+            </el-popover>
           </div>
           <div class="pro-img"></div>
           <div class="pro-name">商品名称</div>
@@ -38,39 +44,40 @@
         <!-- 购物车表头END -->
 
         <!-- 购物车列表 -->
-        <li class="product-list" v-for="(item,index) in getShoppingCart" :key="item.id">
+        <li class="product-list" v-for="item in shoppingCart" :key="item.skuId">
           <div class="pro-check">
-            <el-checkbox :value="item.check" @change="checkChange($event,index)"></el-checkbox>
+            <el-checkbox v-model="item.check" @change="checkChange($event,item.skuId)"></el-checkbox>
           </div>
           <div class="pro-img">
-            <router-link :to="{ path: '/goods/details', query: {productID:item.productID} }">
-              <img :src="item.productImg" />
-            </router-link>
+            <a @click="getProductDetails(item.skuId)" style="cursor: pointer;">
+              <img :src="item.defaultImages" />
+            </a>
           </div>
           <div class="pro-name">
-            <router-link
-              :to="{ path: '/goods/details', query: {productID:item.productID} }"
-            >{{item.productName}}</router-link>
+            <a @click="getProductDetails(item.skuId)" style="cursor: pointer;position: absolute;line-height: 30px">
+            {{item.title}}
+            </a>
           </div>
           <div class="pro-price">{{item.price}}元</div>
           <div class="pro-num">
+            <!--这里写$event即可 下面就能获取到当前的值了-->
             <el-input-number
               size="small"
-              :value="item.num"
-              @change="handleChange($event,index,item.productID)"
+              v-model="item.count"
+              @change="ChangeNum(item.skuId,$event)"
               :min="1"
-              :max="item.maxNum"
+              :max="1000"
             ></el-input-number>
           </div>
-          <div class="pro-total pro-total-in">{{item.price*item.num}}元</div>
+          <div class="pro-total pro-total-in" >{{item.price*item.count}}元</div>
           <div class="pro-action">
-            <el-popover placement="right">
+            <el-popover >
               <p>确定删除吗？</p>
               <div style="text-align: right; margin: 10px 0 0">
                 <el-button
                   type="primary"
                   size="mini"
-                  @click="deleteItem($event,item.id,item.productID)"
+                  @click="deleteItem(item.skuId)"
                 >确定</el-button>
               </div>
               <i class="el-icon-error" slot="reference" style="font-size: 18px;"></i>
@@ -88,9 +95,11 @@
           </span>
           <span class="sep">|</span>
           <span class="cart-total">
-            共
-            <span class="cart-total-num">{{getNum}}</span> 件商品，已选择
-            <span class="cart-total-num">{{getCheckNum}}</span> 件
+           已选择
+            <span class="cart-total-num">{{checkNum}}</span> 样;
+             共
+            <span class="cart-total-num">{{getNum}}</span> 件商品，
+         <!--   <span class="cart-total-num">{{getNum}}</span> 件-->
           </span>
         </div>
         <div class="cart-bar-right">
@@ -98,8 +107,8 @@
             <span class="total-price-title">合计：</span>
             <span class="total-price">{{getTotalPrice}}元</span>
           </span>
-          <router-link :to="getCheckNum > 0 ? '/confirmOrder' : ''">
-            <div :class="getCheckNum > 0 ? 'btn-primary' : 'btn-primary-disabled'">去结算</div>
+          <router-link :to="checkNum > 0 ? '/confirmOrder' : ''">
+            <div :class="checkNum > 0 ? 'btn-primary' : 'btn-primary-disabled'">去结算</div>
           </router-link>
         </div>
       </div>
@@ -118,84 +127,145 @@
   </div>
 </template>
 <script>
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
+//import { mapActions } from "vuex";
+//import { mapGetters } from "vuex";
 
 export default {
   data() {
-    return {};
+    return {
+      visible:false,
+      shoppingCart:[],
+    };
+  },
+  created() {
+      this.getShoppingCart();
   },
   methods: {
-    ...mapActions(["updateShoppingCart", "deleteShoppingCart", "checkAll"]),
-    // 修改商品数量的时候调用该函数
-    handleChange(currentValue, key, productID) {
+    //获取购物车数据
+    getShoppingCart(){
+      //console.log("进来了")
+      this.$axios
+              .get(this.$target1+"/cart")
+              .then(res=>{
+                    this.shoppingCart=res.data.data;
+                   //console.log(this.shoppingCart)
+                })
+              .catch(error=>
+                console.log(error)
+              )
+    },
+
+    //...mapActions(["updateShoppingCart", "deleteShoppingCart", "checkAll"]),
+
+    // 修改商品数量
+    ChangeNum( productID,currentValue) {
       // 当修改数量时，默认勾选
-      this.updateShoppingCart({ key: key, prop: "check", val: true });
+      //this.updateShoppingCart({ key: key, prop: "check", val: true });
       // 向后端发起更新购物车的数据库信息请求
       this.$axios
-        .post("/api/user/shoppingCart/updateShoppingCart", {
-          user_id: this.$store.getters.getUser.user_id,
-          product_id: productID,
-          num: currentValue
+        .post(this.$target1+"/cart/update", {
+          skuId: productID,
+          count:currentValue
         })
         .then(res => {
-          switch (res.data.code) {
-            case "001":
-              // “001”代表更新成功
-              // 更新vuex状态
-              this.updateShoppingCart({
-                key: key,
-                prop: "num",
-                val: currentValue
-              });
               // 提示更新成功信息
               this.notifySucceed(res.data.msg);
-              break;
-            default:
-              // 提示更新失败信息
-              this.notifyError(res.data.msg);
           }
-        })
+        )
         .catch(err => {
           return Promise.reject(err);
         });
     },
-    checkChange(val, key) {
-      // 更新vuex中购物车商品是否勾选的状态
-      this.updateShoppingCart({ key: key, prop: "check", val: val });
+
+    // 更新购物车商品是否勾选的状态
+    checkChange(val, skuId) {
+      //console.log(val,skuId)
+      this.shoppingCart.find(item=>{
+        if(item.skuId==skuId){
+          item.check=val
+        }
+     })
     },
-    // 向后端发起删除购物车的数据库信息请求
-    deleteItem(e, id, productID) {
+    //批量删除购物车商品
+    deleteSomeItem(){
+
+    },
+    // 删除购物车商品
+    deleteItem(productID) {
+      //alert(productID)
       this.$axios
-        .post("/api/user/shoppingCart/deleteShoppingCart", {
-          user_id: this.$store.getters.getUser.user_id,
-          product_id: productID
-        })
-        .then(res => {
-          switch (res.data.code) {
-            case "001":
-              // “001” 删除成功
-              // 更新vuex状态
-              this.deleteShoppingCart(id);
-              // 提示删除成功信息
-              this.notifySucceed(res.data.msg);
-              break;
-            default:
-              // 提示删除失败信息
-              this.notifyError(res.data.msg);
-          }
-        })
-        .catch(err => {
-          return Promise.reject(err);
-        });
-    }
+              //请求更新后台数据库
+              .post(this.$target1+"/cart/delete/"+productID)
+              .then(res => {
+                //更新data中的shoppongCart
+                this.deleteShoppingCart(productID)
+                this.notifySucceed(res.data.msg);
+              })
+              .catch(err => {
+                return Promise.reject(err);
+              });
+    },
+    //删除的同时更新data中的shoppongCart
+    deleteShoppingCart (productID) {
+      // 根据id删除shoppingCart中对应的数据
+      // 1、找到skuId所对应数据的索引
+      var index = this.shoppingCart.findIndex(item=>{
+        return item.skuId == productID;
+      });
+      // 2、根据索引删除对应数据
+      this.shoppingCart.splice(index, 1);
+    },
+    // 点击商品查看详情
+    getProductDetails(product_id){
+      let routeUrl =this.$router.resolve(
+              {path: "/goods/details",
+                query: {
+                  productID: product_id
+                }
+              }
+      );
+      window.open(routeUrl.href, '_blank');
+
+    },
+
   },
   computed: {
+    //返回已选择的商品件数
+    checkNum: function () {
+      let newFilArr = this.shoppingCart.filter( (item) =>{
+        return item.check==true;
+      } )
+      //console.log(newFilArr.length)
+      return newFilArr.length;
+    },
+    //商品总件数
+      getNum:function () {
+          var TotalCount=0;
+          this.shoppingCart.forEach(item=>{
+              TotalCount+=item.count
+          })
+          //alert(TotalCount)
+          return TotalCount;
+      },
+    // 计算商品的总价
+    getTotalPrice: function() {
+      var t = 0;
+      this.shoppingCart.forEach(item => {
+        if(item.check==true){
+          t += item.price * item.count;
+        }
+      });
+      return t;
+    },
+
+
+  }
+  /*computed: {
     ...mapGetters([
-      "getShoppingCart",
-      "getCheckNum",
-      "getTotalPrice",
-      "getNum"
+      //"getShoppingCart",
+      //"getCheckNum",
+      //"getTotalPrice",
+      //"getNum"
     ]),
     isAllCheck: {
       get() {
@@ -205,7 +275,7 @@ export default {
         this.checkAll(val);
       }
     }
-  }
+  }*/
 };
 </script>
 <style scoped>
@@ -286,6 +356,8 @@ export default {
 .shoppingCart .content ul .pro-name {
   float: left;
   width: 380px;
+  height: 80px;
+  position: relative;
 }
 .shoppingCart .content ul .pro-name a {
   color: #424242;

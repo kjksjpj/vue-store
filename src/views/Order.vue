@@ -10,22 +10,29 @@
     <!-- 我的订单头部 -->
     <div class="order-header">
       <div class="order-header-content">
-        <p>
-          <i class="el-icon-s-order" style="font-size: 30px;color: #ff6700;"></i>
-          我的订单
-        </p>
+        <router-link to="/orderList" >
+          <p>
+            <i class="el-icon-s-order" style="font-size: 30px;color: #ff6700;"></i>
+            查看我的订单
+          </p>
+        </router-link>
       </div>
     </div>
     <!-- 我的订单头部END -->
 
     <!-- 我的订单主要内容 -->
-    <div class="order-content" v-if="orders.length>0">
-      <div class="content" v-for="(item,index) in orders" :key="index">
+    <div class="order-content" v-if="orders!=null">
+      <div class="content" >
         <ul>
           <!-- 我的订单表头 -->
           <li class="order-info">
-            <div class="order-id">订单编号: {{item[0].order_id}}</div>
-            <div class="order-time">订单时间: {{item[0].order_time | dateFormat}}</div>
+            <div class="order-id">订单编号:{{orders.orderToken}}</div>
+            <!--倒计时  支付超过半小时就自动取消该订单-->
+            <span style="margin-left: 100px" v-if="orderStatus==0">订单将在<strong>30分钟</strong>后关闭，请尽快完成支付</span>
+            <div class="order-time">支付状态:
+              <span v-if="orderStatus==1">支付成功</span>
+              <span v-else-if="orderStatus==0">待支付</span>
+            </div>
           </li>
           <li class="header">
             <div class="pro-img"></div>
@@ -37,33 +44,29 @@
           <!-- 我的订单表头END -->
 
           <!-- 订单列表 -->
-          <li class="product-list" v-for="(product,i) in item" :key="i">
+          <li class="product-list" v-for="item in orders.items" :key="item.skuId">
             <div class="pro-img">
-              <router-link :to="{ path: '/goods/details', query: {productID:product.product_id} }">
-                <img :src="product.product_picture" />
-              </router-link>
+                <img @click="toDetail(item.skuId)"  :src="item.defaultImages" />
             </div>
             <div class="pro-name">
-              <router-link
-                :to="{ path: '/goods/details', query: {productID:product.product_id} }"
-              >{{product.product_name}}</router-link>
+                <span @click="toDetail(item.skuId)" style="position: absolute;top:20%;line-height: 30px;">{{item.title}}</span>
             </div>
-            <div class="pro-price">{{product.product_price}}元</div>
-            <div class="pro-num">{{product.product_num}}</div>
-            <div class="pro-total pro-total-in">{{product.product_price*product.product_num}}元</div>
+            <div class="pro-price">{{item.price}}元</div>
+            <div class="pro-num">{{item.count}}</div>
+            <div class="pro-total pro-total-in">{{item.price * item.count}}元</div>
           </li>
         </ul>
         <div class="order-bar">
           <div class="order-bar-left">
             <span class="order-total">
               共
-              <span class="order-total-num">{{total[index].totalNum}}</span> 件商品
+              <span class="order-total-num">{{itemNum}}</span> 件商品
             </span>
           </div>
           <div class="order-bar-right">
             <span>
               <span class="total-price-title">合计：</span>
-              <span class="total-price">{{total[index].totalPrice}}元</span>
+              <span class="total-price">{{orders.totalPrice}}元</span>
             </span>
           </div>
           <!-- 订单列表END -->
@@ -85,13 +88,49 @@
 </template>
 <script>
 export default {
+  name: "",
   data() {
     return {
-      orders: [], // 订单列表
-      total: [] // 每个订单的商品数量及总价列表
+      orderStatus:0,//订单支付状态
+      orders: {}, // 订单列表
     };
   },
-  activated() {
+  created(){
+    //console.log("这是接受路由参数"+this.$route.params)
+    /*this.orders = this.$route.params;*/
+    this.orders.orderToken = this.$route.params.orderToken;
+    this.orders.address = this.$route.params.address;
+    this.orders.items= this.$route.params.items;
+    this.orders.totalPrice = this.$route.params.totalPrice;
+
+   /* console.log("这是接受路由参数页面的data==")
+    console.log(this.orders)
+    console.log(this.orders.orderToken)*/
+
+    //轮询请求 (每隔10s)后台订单状态
+    //订单还没生成就调用订单状态
+   /* this.getOrderStatus();*/
+   this.timer = setInterval(this.getOrderStatus,1000 * 4);
+
+
+  },
+  computed:{
+    //计算商品总件数
+    itemNum(){
+      let totalNum=0;
+      this.orders.items.forEach(item=>{
+        totalNum+=item.count;
+      })
+      return totalNum;
+    }
+  },
+
+
+
+
+ /* activated() {
+
+
     // 获取订单数据
     this.$axios
       .post("/api/user/order/getOrder", {
@@ -119,8 +158,9 @@ export default {
       .catch(err => {
         return Promise.reject(err);
       });
-  },
-  watch: {
+  },*/
+
+ /* watch: {
     // 通过订单信息，计算出每个订单的商品数量及总价
     orders: function(val) {
       let total = [];
@@ -138,6 +178,36 @@ export default {
       }
       this.total = total;
     }
+  },*/
+  methods:{
+    //请求订单状态
+    getOrderStatus(){
+      console.log("调用轮询请求后台订单状态")
+      this.$axios
+              .get(this.$target1+'/oms/order/status/'+this.orders.orderToken)
+              .then(res=>{
+                   console.log("后台返回的订单状态==")
+                   console.log(res.data)
+                  this.orderStatus=res.data.data;
+                //一旦订单状态为1或4 就清楚定时器
+                 if(this.orderStatus==1 || this.orderStatus==4){
+                  clearInterval(this.timer)
+                  }
+              })
+              .catch(err => {
+                return Promise.reject(err);
+              })
+    },
+    //打开商品详情页面
+    toDetail(skuID) {
+      let routeOne = this.$router.resolve({
+        name: "Details",
+        query: {
+          productID: skuID
+        }
+      });
+      window.open(routeOne.href, '_blank');
+    },
   }
 };
 </script>
@@ -219,6 +289,8 @@ export default {
 .order .content ul .pro-name {
   float: left;
   width: 380px;
+  height: 80px;
+  position: relative;
 }
 .order .content ul .pro-name a {
   color: #424242;

@@ -12,14 +12,25 @@
 }
 
 .main {
-  margin: 0 auto;
+  margin: 10px auto;
   max-width: 1225px;
+}
+
+.main .list {
+  padding-top: 14.5px;
+  margin:0 auto;
+  overflow: auto;
+}
+
+.main h1{
+  color:red;
 }
 
 /* 轮播图CSS */
 .block {
   margin: 0 auto;
-  max-width: 1225px;
+
+  max-width: 960px;
 }
 
 .el-carousel__item:nth-child(2n) {

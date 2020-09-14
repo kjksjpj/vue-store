@@ -2,10 +2,12 @@
   <div class="html">
     <div class="body">
       <div class="container ">
-        <div class="row">
-          <div class="span4">
-            <div id="J_userMenu" class="user-address-menu">
-              <div class="menu-box"><h3 class="title">订单中心</h3>
+        <div class="row" style="display: flex;margin: 10px 30px 10px 0px;justify-content: space-around">
+
+          <!--左侧导航栏区-->
+          <div class="span4" style="border:#00aeff solid;" >
+            <div id="J_userMenu" class="user-address-menu" style="border:#00aeff solid">
+              <div class="menu-box"><h3 class="title" id="titile" style="font-size: 25px;">订单中心</h3>
                 <ul class="list">
                   <li :class="{active:isActive==1}"><a href="javascript:void(0);" data-stat-id="e90282590ad08689"
                                                        v-on:click="$router.push({ path: '/user/orderList' }),isActive=1">
@@ -26,7 +28,8 @@
                   <!--                  </li>-->
                 </ul>
               </div>
-              <div class="menu-box"><h3 class="title">个人中心</h3>
+              <el-divider></el-divider>
+              <div class="menu-box"><h3 class="title" style="font-size: 25px;">个人中心</h3>
                 <ul class="list">
                   <li :class="{active:isActive==5}">
                     <a href="javascript:void(0);" data-stat-id="e90282590ad08689"
@@ -69,7 +72,10 @@
                   </li>
                 </ul>
               </div>
-              <div class="menu-box"><h3 class="title">售后服务</h3>
+
+              <el-divider></el-divider>
+
+              <div class="menu-box"><h3 class="title" style="font-size: 25px;">售后服务</h3>
                 <ul class="list">
                   <li :class="{active:isActive==15}"><a href="//service.order.mi.com/record/list?r="
                                                         data-stat-id="188ed0acb57d9f29"
@@ -85,7 +91,8 @@
                   <!--                  </li>-->
                 </ul>
               </div>
-              <div class="menu-box"><h3 class="title">账户管理</h3>
+              <el-divider></el-divider>
+              <div class="menu-box"><h3 class="title" style="font-size: 25px;">账户管理</h3>
                 <ul class="list">
                   <li :class="{active:isActive==18}">
                     <a href="javascript:void(0);" data-stat-id="e90282590ad08689"
@@ -101,15 +108,16 @@
               </div>
             </div>
           </div>
+          <!--左侧导航栏区 --END -->
 
-
-          <div class="span16">
-
-
-            <div class="mi-uc-box uc-main-box">
+         <!--右侧内容区-->
+          <div class="span16" style="border: #00aeff solid;width: 800px" >
+            <div class="mi-uc-box uc-main-box" >
               <router-view></router-view>
             </div>
           </div>
+         <!--右侧内容去 END-->
+
         </div>
       </div>
     </div>
@@ -138,6 +146,7 @@
   body {
     margin: 0
   }
+
 
   article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
     display: block

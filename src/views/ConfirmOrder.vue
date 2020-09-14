@@ -14,7 +14,6 @@
           <i class="el-icon-s-order"></i>
         </p>
         <p>确认订单</p>
-        <router-link to></router-link>
       </div>
     </div>
     <!-- 头部END -->
@@ -25,21 +24,37 @@
       <div class="section-address">
         <p class="title">收货地址</p>
         <div class="address-body">
-          <ul>
-            <li
+          <ul v-if="address !== []">
+            <li @click="changeAddress(item.id)"
               :class="item.id == confirmAddress ? 'in-section' : ''"
               v-for="item in address"
               :key="item.id"
             >
               <h2>{{item.name}}</h2>
               <p class="phone">{{item.phone}}</p>
-              <p class="address">{{item.address}}</p>
+              <p class="address">{{item.addr}}</p>
             </li>
-            <li class="add-address">
+            <li class="add-address" @click="dialogFormVisible = true">
               <i class="el-icon-circle-plus-outline"></i>
               <p>添加新地址</p>
             </li>
           </ul>
+          <ul v-else>
+            <li class="add-address" @click="dialogFormVisible = true">
+              <i class="el-icon-circle-plus-outline"></i>
+              <p>添加新地址</p>
+            </li>
+          </ul>
+
+          <!--          添加地址弹出框开始-->
+          <el-dialog title="添加收货地址" :visible.sync="dialogFormVisible" width="40%">
+            <Address></Address>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="getAddressJson">关 闭</el-button>
+            </div>
+          </el-dialog>
+          <!--          添加地址弹出框开始-->
+
         </div>
       </div>
       <!-- 选择地址END -->
@@ -49,12 +64,12 @@
         <p class="title">商品及优惠券</p>
         <div class="goods-list">
           <ul>
-            <li v-for="item in getCheckGoods" :key="item.id">
-              <img :src="item.productImg" />
-              <span class="pro-name">{{item.productName}}</span>
-              <span class="pro-price">{{item.price}}元 x {{item.num}}</span>
+            <li v-for="item in orderConfirmInfo.orderItems" :key="item.id">
+              <img @click="toDetail(item.skuId)" :src="item.defaultImages" style="cursor: pointer" />
+              <span @click="toDetail(item.skuId)" class="pro-name" style="cursor: pointer">{{item.title}}</span>
+              <span class="pro-price">{{item.price}}元 x {{item.count}}</span>
               <span class="pro-status"></span>
-              <span class="pro-total">{{item.price * item.num}}元</span>
+              <span class="pro-total">{{item.price * item.count}}元</span>
             </li>
           </ul>
         </div>
@@ -74,6 +89,10 @@
         <p class="invoice">电子发票</p>
         <p class="invoice">个人</p>
         <p class="invoice">商品明细</p>
+
+
+
+
       </div>
       <!-- 发票END -->
 
@@ -83,11 +102,11 @@
           <ul>
             <li>
               <span class="title">商品件数：</span>
-              <span class="value">{{getCheckNum}}件</span>
+              <span class="value">{{checkNum}}件</span>
             </li>
             <li>
               <span class="title">商品总价：</span>
-              <span class="value">{{getTotalPrice}}元</span>
+              <span class="value">{{totalPrice}}元</span>
             </li>
             <li>
               <span class="title">活动优惠：</span>
@@ -98,25 +117,42 @@
               <span class="value">-0元</span>
             </li>
             <li>
+              <span class="title">重量：</span>
+              <span class="value">{{totalWeight}}千克</span>
+            </li>
+            <li>
               <span class="title">运费：</span>
               <span class="value">0元</span>
             </li>
             <li class="total">
               <span class="title">应付总额：</span>
               <span class="value">
-                <span class="total-price">{{getTotalPrice}}</span>元
+                <span class="total-price">{{totalPrice}}</span>元
               </span>
             </li>
+
+
           </ul>
         </div>
       </div>
       <!-- 结算列表END -->
-
       <!-- 结算导航 -->
       <div class="section-bar">
         <div class="btn">
           <router-link to="/shoppingCart" class="btn-base btn-return">返回购物车</router-link>
-          <a href="javascript:void(0);" @click="addOrder" class="btn-base btn-primary">结算</a>
+            <a  @click="dialogVisible = true,commitOrder()" class="btn-base btn-primary">付款
+            </a>
+          <el-dialog
+                  title="提示"
+                  :visible.sync="dialogVisible"
+                  width="30%"
+                  :before-close="handleClose">
+            <span>是否完成支付</span>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="dialogVisible = false">取消</el-button>
+              <el-button type="primary" @click="dialogVisible = false,transmit()">完成</el-button>
+            </span>
+          </el-dialog>
         </div>
       </div>
       <!-- 结算导航END -->
@@ -125,46 +161,87 @@
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
+import Address from "../components/Address";
+
 export default {
   name: "",
+  components: {Address},
   data() {
     return {
-      // 虚拟数据
-      confirmAddress: 1, // 选择的地址id
-      // 地址列表
-      address: [
-        {
-          id: 1,
-          name: "陈同学",
-          phone: "13580018623",
-          address: "广东 广州市 白云区 江高镇 广东白云学院"
-        },
-        {
-          id: 2,
-          name: "陈同学",
-          phone: "13580018623",
-          address: "广东 茂名市 化州市 杨梅镇 ***"
-        }
-      ]
+      dialogFormVisible: false, //是否显示添加地址组件
+      orderConfirmInfo: "", //后台返回的数据
+      confirmAddress: "", // 选择的地址id
+      newHtml: "", //后台返回的html
+      dialogVisible: false,
     };
   },
   created() {
+    this.getOrderConfirm();
     // 如果没有勾选购物车商品直接进入确认订单页面,提示信息并返回购物车
-    if (this.getCheckNum < 1) {
+    if (this.orderConfirmInfo !== "" && this.orderConfirmInfo.orderItems === "") {
       this.notifyError("请勾选商品后再结算");
-      this.$router.push({ path: "/shoppingCart" });
+      this.$router.push('/shoppingCart');
     }
+
   },
   computed: {
-    // 结算的商品数量; 结算商品总计; 结算商品信息
-    ...mapGetters(["getCheckNum", "getTotalPrice", "getCheckGoods"])
+    //通过orderConfirmInfo，组装地址信息,得到地址列表，手机，id，姓名
+    address() {
+      let addresses = [];
+      if (this.orderConfirmInfo === "") {
+        return;
+      }
+        this.orderConfirmInfo.address.forEach(item => {
+          let addr = item.province + " " + item.city + " " + item.region + " " + item.detailAddress;
+          let address = new Object();
+          address.id = item.id;
+          address.addr = addr;
+          address.phone = item.phone;
+          address.name = item.name;
+          addresses.push(address)
+        });
+      return addresses;
+    },
+    //选中的地址
+    checkedAddress() {
+      let address = this.orderConfirmInfo.address.find(item => {
+        if(item.id === this.confirmAddress) {
+          return item;
+        }
+      });
+      return address;
+    },
+    //得到商品总数
+    checkNum() {
+      let sum = 0;
+      this.orderConfirmInfo.orderItems.forEach(item => {
+        sum += item.count;
+      })
+      return sum;
+    },
+    //得到总价格
+    totalPrice() {
+      let totalPrice = 0;
+      this.orderConfirmInfo.orderItems.forEach(item => {
+        totalPrice += item.price * item.count;
+      })
+      return totalPrice;
+    },
+    //得到总重量
+    totalWeight() {
+      let totalWeight = 0;
+      this.orderConfirmInfo.orderItems.forEach(item => {
+        totalWeight += item.weight;
+      })
+      return totalWeight;
+    }
   },
+
   methods: {
-    ...mapActions(["deleteShoppingCart"]),
+    ...mapActions(['deleteShoppingCart', 'setWhoShare', 'setDistInfo', 'setIsJoinDist']),
     addOrder() {
-      this.$axios
+    /*  this.$axios
         .post("/api/user/order/addOrder", {
           user_id: this.$store.getters.getUser.user_id,
           products: this.getCheckGoods
@@ -191,8 +268,174 @@ export default {
         })
         .catch(err => {
           return Promise.reject(err);
-        });
-    }
+        });*/
+    },
+
+
+
+    timeFN(){
+      this.commitOrder();
+      /*this.transmit();*/
+    },
+
+    //传值  传递数据给order组件
+    transmit(){
+      //console.log("调用到了传值方法")
+      this.$router.push({
+        name: "Order",
+        params: {
+          orderToken: this.orderConfirmInfo.orderToken,
+          address: this.checkedAddress,
+          items: this.orderConfirmInfo.orderItems,
+          totalPrice: this.totalPrice,
+      }
+    })
+
+    },
+    //提交订单
+    commitOrder() {
+      console.log("调用到了提交订单方法")
+      this.$axios
+          .post(this.$target1 + "/order/submit", {
+            orderToken: this.orderConfirmInfo.orderToken,
+            address: this.checkedAddress,
+            payType: 1,
+            items: this.orderConfirmInfo.orderItems,
+            bound: 1000,
+            totalPrice: this.totalPrice,
+          })
+          .then(res => {
+            //console.log(res);
+            switch (res.data.code) {
+              case 0: {
+                //获得分销系统的用户信息
+                this.getDistributionUserInfo();
+                //查看是否有邀请人
+                if (this.$store.state.shareInfo.whoShare !== undefined) {
+                  if (this.$store.state.user.isJoinDist === false) {
+                    //加入分销
+                    this.join();
+                  }
+                  //分销的交易结算
+                    this.distTrade(this.orderConfirmInfo.orderToken, this.totalPrice)
+                }
+                //在分销系统中提交交易
+                this.newHtml = res.data.data;
+                let myWindow=window.open('','','fullscreen=1');
+                myWindow.document.write(this.newHtml)
+                myWindow.focus();
+              }
+            }
+          })
+          .catch(err => {
+            return Promise.reject(err);
+          });
+
+    },
+
+    //查看用户分销信息
+    getDistributionUserInfo() {
+      let user = this.$store.state.user.user;
+      this.$axios
+          .get(this.$target2 + "/api/v1/getUserInfo", {params: {userId: user.username}})
+          .then(res => {
+            if (res.data.success === true) {
+              this.setDistInfo(res.data.data);
+              this.setDistInfo(true);
+            }
+          })
+          .catch(err => {
+            return Promise.reject(err);
+          });
+    },
+    //分销交易
+    distTrade(id, price) {
+      this.$axios({
+        method: 'post',
+        url: this.$target2 + "/api/v1/trade",
+        data: {
+          disAmount: price,
+          disSetUserId: this.$store.state.user.user.username,
+          orderId: id,
+          secret: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MzExMTczMzk4MDcsInBheWxvYWQiOiJcInhpYW9qaWFuZ1wiIn0.rOY3JXrYpNMWwATmY7r3jm0Ec6SuhNPyrP2rGD43Isk",
+        }
+      })
+          .then(res => {
+              console.log(res)
+          })
+          .catch(err => {
+            return Promise.reject(err);
+
+          })
+    },
+
+    //加入分销
+    join() {
+      let user = this.$store.state.user.user;
+      this.$axios({
+        method: 'post',
+        url: this.$target2 + "/api/v1/memberAdd",
+        data: {
+          disModelId: this.$store.state.shareInfo.whoShare,
+          disNote: "nothing",
+          disPlatformId: "dist",
+          disUserName: user.username,
+          disUserId: user.username,
+          secret: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MzExMTczMzk4MDcsInBheWxvYWQiOiJcInhpYW9qaWFuZ1wiIn0.rOY3JXrYpNMWwATmY7r3jm0Ec6SuhNPyrP2rGD43Isk",
+        }
+      })
+          .then(res => {
+            if (res.data.success === true) {
+              this.getDistributionUserInfo();
+            }
+          })
+          .catch(err => {
+            return Promise.reject(err);
+          });
+
+    },
+
+    //创建页面时，获取需确认订单信息
+    getOrderConfirm() {
+      this.$axios
+          .get(this.$target1 + "/order/confirm")
+          .then(res => {
+            this.orderConfirmInfo = res.data.data;
+            //将默认地址id填入confirmAddress
+              let address = this.orderConfirmInfo.address.find(item => {
+                if(item.defaultStatus === 1) {
+                  return item;
+                }
+              });
+              //console.log(res.data.data)
+              this.confirmAddress = address.id;
+
+          })
+          .catch(err => {
+            console.log('错误信息：' + err)
+            return Promise.reject(err);
+          });
+    },
+    //选择的地址改变
+    changeAddress(value) {
+      this.confirmAddress = value;
+    },
+
+    //打开商品详情页面
+    toDetail(skuID) {
+      let routeOne = this.$router.resolve({
+        name: "Details",
+        query: {
+          productID: skuID
+        }
+      });
+      window.open(routeOne.href, '_blank');
+    },
+    //获得用户的地址
+    getAddressJson(){
+      this.dialogFormVisible = false;
+      this.getOrderConfirm();
+    },
   }
 };
 </script>

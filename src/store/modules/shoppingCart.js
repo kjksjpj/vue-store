@@ -25,7 +25,7 @@ export default {
       // 获取购物车状态
       return state.shoppingCart;
     },
-    getNum (state) {
+    /*getNum (state) {
       // 购物车商品总数量
       let totalNum = 0;
       for (let i = 0; i < state.shoppingCart.length; i++) {
@@ -33,7 +33,7 @@ export default {
         totalNum += temp.num;
       }
       return totalNum;
-    },
+    },*/
     getIsAllCheck (state) {
       // 判断是否全选
       let isAllCheck = true;
@@ -125,7 +125,9 @@ export default {
         }
       }
     },
-    deleteShoppingCart (state, id) {
+
+
+  /*  deleteShoppingCart (state, id) {
       // 根据购物车id删除购物车商品
       for (let i = 0; i < state.shoppingCart.length; i++) {
         const temp = state.shoppingCart[i];
@@ -133,7 +135,7 @@ export default {
           state.shoppingCart.splice(i, 1);
         }
       }
-    },
+    },*/
     checkAll (state, data) {
       // 点击全选按钮，更改每个商品的勾选状态
       for (let i = 0; i < state.shoppingCart.length; i++) {

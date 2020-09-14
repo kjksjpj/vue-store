@@ -6,35 +6,66 @@
  * @LastEditTime: 2020-04-05 13:22:22
  -->
 <template>
-  <div id="myList" class="myList">
+  <div id="myList" class="myList" >
     <ul>
-      <li v-for="item in list" :key="item.product_id">
-        <el-popover placement="top">
+      <li v-for="item in list"  :key="item.skuId" style="margin: 3px;">
+        <!--<el-popover placement="top">
           <p>确定删除吗？</p>
           <div style="text-align: right; margin: 10px 0 0">
             <el-button type="primary" size="mini" @click="deleteCollect(item.product_id)">确定</el-button>
           </div>
           <i class="el-icon-close delete" slot="reference" v-show="isDelete"></i>
-        </el-popover>
-        <router-link :to="{ path: '/goods/details', query: {productID:item.product_id} }">
-          <img :src="item.product_picture" alt />
-          <h2>{{item.product_name}}</h2>
-          <h3>{{item.product_title}}</h3>
+        </el-popover>-->
+
+         <div @click="getProductDetails(item.skuId)" style="cursor: pointer">
+        <!--<router-link :to="{ path: '/goods/details', query: {productID:item.skuId} }">-->
+          <img :src="item.pic" alt />
+          <h3 v-html="item.title"></h3>
           <p>
-            <span>{{item.product_selling_price}}元</span>
-            <span
+            <span><em style="font-style: normal;"></em>{{item.price|priceFormat}}</span>
+        <!--    <span
               v-show="item.product_price != item.product_selling_price"
               class="del"
-            >{{item.product_price}}元</span>
+            >{{item.price}}元</span>-->
           </p>
-        </router-link>
+            <h3>{{item.storeName}}</h3>
+          <div class="p-icons" id="J_pro_100012749298" data-done="1" style="margin-top:10px;overflow: hidden;zoom: 1;height: 18px;padding-left: 70px">
+            <i class="goods-icons J-picon-tips J-picon-fix" data-idx="1" data-tips="京东自营，品质保障" style="float: left;
+                  height: 16px;
+                  line-height: 16px;
+                  padding: 0 3px;
+                  margin-right: 3px;
+                  overflow: hidden;
+                  text-align: center;
+                  font-style: normal;
+                  font-size: 12px;
+                  background: #e23a3a;
+                  color: #FFF;
+                  cursor: default;
+                  border-radius: 2px;">
+              自营
+            </i>
+            <i class="goods-icons4 J-picon-tips" style="border-color:#4d88ff;color:#4d88ff;float: left;
+                  height: 14px;
+                  line-height: 14px;padding: 0 3px;
+                  border: 1px solid #e23a3a;
+                  margin-right: 3px;
+                  overflow: hidden;
+                  text-align: center;
+                  font-style: normal;
+                  font-size: 12px;
+                  border-radius: 2px;
+                  " data-idx="1" data-tips="品质服务，放心购物">
+              放心购
+            </i>
+          </div>
+        <!--</router-link>-->
+         </div>
+
       </li>
-      <li v-show="isMore && list.length>=1" id="more">
-        <router-link :to="{ path: '/goods', query: {categoryID:categoryID} }">
-          浏览更多
-          <i class="el-icon-d-arrow-right"></i>
-        </router-link>
-      </li>
+
+
+
     </ul>
   </div>
 </template>
@@ -42,7 +73,6 @@
 export default {
   name: "MyList",
   // list为父组件传过来的商品列表
-  // isMore为是否显示“浏览更多”
   props: ["list", "isMore", "isDelete"],
   data() {
     return {};
@@ -62,7 +92,20 @@ export default {
       return categoryID;
     }
   },
+
   methods: {
+    getProductDetails(product_id){
+      // 跳转到Details组件页面
+      let routeUrl =this.$router.resolve(
+              {path: "/goods/details",
+                query: {
+                  productID: product_id
+                }
+              }
+      );
+      window.open(routeUrl.href, '_blank');
+
+    },
     deleteCollect(product_id) {
       this.$axios
         .post("/api/user/collect/deleteCollect", {
@@ -97,6 +140,7 @@ export default {
 </script>
 <style scoped>
 .myList ul li {
+  border:1px solid transparent;
   z-index: 1;
   float: left;
   width: 234px;
@@ -104,16 +148,17 @@ export default {
   padding: 10px 0;
   margin: 0 0 14.5px 13.7px;
   background-color: white;
-  -webkit-transition: all 0.2s linear;
+ /* -webkit-transition: all 0.2s linear;
   transition: all 0.2s linear;
-  position: relative;
+  position: relative;*/
 }
 .myList ul li:hover {
-  z-index: 2;
-  -webkit-box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-  -webkit-transform: translate3d(0, -2px, 0);
-  transform: translate3d(0, -2px, 0);
+  border: #f91424 1px solid;
+  /*z-index: 2;*/
+/*  -webkit-box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);*/
+ /* -webkit-transform: translate3d(0, -2px, 0);
+  transform: translate3d(0, -2px, 0);*/
 }
 .myList ul li img {
   display: block;
