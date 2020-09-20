@@ -32,7 +32,7 @@
                                 如果您不想购买，可以
                             </span>
                             <span>
-                                <a @click="updateStatus(unpaidOrder.orderSn)" style="font-size: 14px;color: #6766f7;cursor: pointer" id="cancelOrder">取消订单</a>
+                                <a  style="font-size: 14px;color: #6766f7;cursor: pointer" id="cancelOrder">取消订单</a>
                             </span>
                         </li>
                     </ul>

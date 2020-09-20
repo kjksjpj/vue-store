@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <div>
+  <div style="margin-left: 20px;">
+<!--    <div>-->
       <div><h2>收货地址</h2></div>
-    </div>
+<!--    </div>-->
     <el-tabs v-model="activeName">
     <el-tab-pane label="查看收货地址" name="one">
   <div class="the-address" v-if="this.addressList.length>0">
@@ -98,49 +98,40 @@
         </tr>
         </thead>
         <tbody class="table-tbody">
-        <tr class="item" v-for="(v) in addressList" :key="v">
+        <tr class="item" v-for="(v,index) in addressList" :key="index">
           <td class="tdd">
-                        <span class="ti">
-                            <span class="tt">{{v.name}}</span>
-                        </span>
+
+            {{v.name}}
           </td>
           <td class="tdd">
-                        <span class="ti">
-                            <span class="tt">{{v.province+v.city+v.region}}</span>
-                        </span>
+
+            {{v.province+v.city+v.region}}
           </td>
           <td class="tdd">
-                        <span class="ti">
-                            <span class="tt">{{v.detailAddress}}</span>
-                        </span>
+
+            {{v.detailAddress}}
           </td>
-<!--          <td class="tdd">-->
-<!--                        <span class="ti">-->
-<!--                            <span class="tt">{{v.zipCode}}</span>-->
-<!--                        </span>-->
-<!--          </td>-->
+
           <td class="tdd">
-                        <span class="ti">
-                            <span class="tt">{{v.phone}}</span>
-                        </span>
+            {{v.phone}}
           </td>
           <td class="tdd">
                         <span class="ti">
                              <div class="handle">
                                 <span  class="a-chg" @click="showAddress(v.id)">修改</span>
                                 <i class="line">|</i>
-<!--                                <span class="i-del" @click="removeClick(v.id)">删除</span>-->
-                                <el-popover >
+                                <el-popover  placement="top" width="160"  v-model="tipVisibles[index]">
                                  <p>确定删除吗？</p>
-                                 <div style="text-align: right; margin: 10px 0 0">
+                                 <div style="text-align: right; margin: 0">
+                                 <el-button  type="text" @click="canelDelete(index)">取消</el-button>
                                  <el-button
-                                   type="primary"
-                                   size="mini"
-                                   @click="remove(v.id)"
+                                   type="text"
+                                   @click="remove(v.id),canelDelete(index)"
                                   >确定</el-button>
                              </div>
                             <el-button slot="reference">删除</el-button>
                                </el-popover>
+
                             </div>
                         </span>
           </td>
@@ -157,52 +148,36 @@
   </div>
 <!--      当地址栏无信息时显示-->
       <div v-else class="the-address-empty">
-        <div>
           <h2>您还未添加地址，快去添加地址吧！</h2>
-        </div>
       </div>
     </el-tab-pane>
       <el-tab-pane label="添加收货地址" name="two">
-        <div>
           <div class="address_content">
-          <form>
-            <ul>
-            <li>
-              <label>收货人姓名:</label>
-            <input type="text" v-model="increAddress.addname" placeholder="请输入收货人姓名">
-            </li>
-            <li>
-              <label>收货人电话:</label>
-              <input type="text" v-model="increAddress.addphone" placeholder="请输入收货人电话">
-            </li>
-              <span style="font-size: 20px;">收货地址：</span>
-            <li>
-<!--              <label>收货地址:</label>-->
-<!--              <input type="text" v-model="increaddress.addregion" placeholder="请输入收货人地址">-->
-<!--              <Select></Select>-->
-              <div class="dist">
-                <v-distpicker @province="onChangeProvince" @city="onChangeCity"
-                              @area="onChangeArea"></v-distpicker>
-              </div>
-            </li>
-            <li>
-              <label>详细地址:</label>
-              <input type="textarea" v-model="increAddress.adddetail" placeholder="请输入收货人详细地址">
-            </li>
-<!--              <li>-->
-<!--                <label>默认地址:</label>-->
-<!--                <label for="yes">-->
-<!--                  <input type="radio" id="yes" value="1" v-model="increAddress.adddefault">是-->
-<!--                </label>-->
-<!--                <label for="no">-->
-<!--                  <input type="radio" id="no" value="0" v-model="increAddress.adddefault">否-->
-<!--                </label>-->
-<!--              </li>-->
-            </ul>
-          </form>
-              <button  @click="onSubmit">保存</button>
+            <form>
+              <ul>
+                <li>
+                  <label>收货人姓名:</label>
+                  <input type="text" v-model="increAddress.addname" placeholder="请输入收货人姓名">
+                </li>
+                <li>
+                  <label>收货人电话:</label>
+                  <input type="text" v-model="increAddress.addphone" placeholder="请输入收货人电话">
+                </li>
+                <span style="font-size: 20px;">收货地址：</span>
+                <li>
+                  <div class="dist">
+                    <v-distpicker @province="onChangeProvince" @city="onChangeCity"
+                                  @area="onChangeArea"></v-distpicker>
+                  </div>
+                </li>
+                <li>
+                  <label>详细地址:</label>
+                  <input type="textarea" v-model="increAddress.adddetail" placeholder="请输入收货人详细地址">
+                </li>
+              </ul>
+            </form>
+            <button  @click="onSubmit">保存</button>
           </div>
-        </div>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -215,7 +190,7 @@
     components: { VDistpicker },
     data(){
       return{
-
+        tipVisibles: [],//解决pop问题
         //展示地址列表默认设置
         addressList: [],
         //增加地址默认设置
@@ -244,7 +219,10 @@
       this.getAddressJson();
     },
     methods:{
-
+      //解决pop问题方法
+      canelDelete(index){
+        this.tipVisibles.splice(index, 1, false);
+      },
       //保存新增的地址
       onSubmit() {
         //手机号规则：表示以1开头，第二位可能是3/4/5/7/8/9等的任意一个，在加上后面的\d表示数字[0-9]的9位，总共加起来11位结束。
@@ -313,6 +291,7 @@
       },
       //删除某一行地址
       remove(id){
+        this.visible=false;
         this.$axios({
           method:'post',
           url:this.$target1+"/ums/memberreceiveaddress/delete/",
@@ -535,7 +514,8 @@
     width: 978px;
   }
   .address_content{
-    padding-left: 10px;
+    width:800px;
+    /*padding-left: 10px;*/
   }
   .address_content ul{
     margin: 0;
@@ -590,7 +570,7 @@
   .the-address, .the-address .adr-tent, .the-address .adr-tent .adr-table .table-thead .thh, .the-address .adr-tent .adr-table .table-tbody, .the-address .adr-tent .adr-table .table-tbody .item, .the-address .adr-tent .adr-table .table-tbody .item .tdd {
     overflow: hidden; }
   .the-address {
-    width: 700px;
+    /*width: 700px;*/
     margin-top: 10px;
     background-color: #fff; }
   .the-address-empty{
@@ -620,14 +600,15 @@
     margin-bottom:20px;
   }
   .the-address .adr-tent .adr-table {
-    width: 100%; }
+    width: 800px; }
   .the-address .adr-tent .adr-table .table-thead {
-    width: 100%;
+    width: 800px;
     height: 39px;
     border-bottom: 1px solid #dcdee3;
     background-color: #ebecf0; }
   .the-address .adr-tent .adr-table .table-thead .thh {
-    text-align: left;
+    width:150px;
+    text-align: center;
     border: 1px solid #dcdee3; }
   .the-address .adr-tent .adr-table .table-thead .thh .tn {
     padding: 12px 15px;
@@ -641,29 +622,40 @@
   .the-address .adr-tent .adr-table .table-tbody .item:hover {
     background-color: #ebecf0; }
   .the-address .adr-tent .adr-table .table-tbody .item .tdd {
+    width:150px;
+    text-align: center;
     box-sizing: border-box;
     border: 1px solid #dcdee3;
     border-top-color: transparent; }
   .the-address .adr-tent .adr-table .table-tbody .item .tdd .ti {
-    padding: 12px 14px;
+    width:150px;
+    /*padding: 12px 14px;*/
     display: inline-block; }
   .the-address .adr-tent .adr-table .table-tbody .item .tdd .tt {
-    min-width: 50px;
-    display: inline-block; }
+    width:150px;
+    /*max-width: 150px;*/
+    display: inline-block;
+    /*display:block;*/
+     }
   .the-address .adr-tent .adr-table .table-tbody .item .tdd .handle {
-    width: 90px; }
+    width: 90px;
+    margin-left: 28px;
+  }
   .the-address .adr-tent .adr-table .table-tbody .item .tdd .handle span{
+
     font-size: 15px; }
   /*.the-address .adr-tent .adr-table .table-tbody .item .tdd .handle .el-popover el-button{*/
   /*  font-size: 5px; }*/
   .the-address .adr-tent .adr-table .table-tbody .item .tdd .handle > * {
-    display: inline-block; }
+    display: inline-block;
+    }
   .the-address .adr-tent .adr-table .table-tbody .item .tdd .handle .line {
     margin: 0 5px;
     color: #dcdee3; }
   .the-address .adr-tent .adr-table .table-tbody .item .tdd .handle .a-chg:hover {
+    cursor: pointer;
     color: #f56954;
-    text-decoration: underline; }
+    text-decoration: none; }
   .the-address .adr-tent .adr-table .table-tbody .item .tdd .handle .i-del {
     cursor: pointer; }
   .the-address .adr-tent .adr-table .table-tbody .item .tdd .handle .i-del:hover {
@@ -683,5 +675,7 @@
     border-radius: 3px;
     background: #ffd6cc;
     color: #e44135;
-    text-align: center; }
+    text-align: center;
+    cursor: pointer;
+  }
 </style>

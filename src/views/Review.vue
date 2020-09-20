@@ -6,15 +6,15 @@
         <h3 class="o-title">评价订单</h3>
         <div>
           <span class="order-id">订单号： <a href="Order.vue">{{orderInfo.id}}</a></span>
-<!--          <span class="order-time">{{orderInfo.createTime}}</span>-->
-          <span class="order-time">2020年8月31日 14:05:22</span>
+          <!-- <span class="order-time">{{orderInfo.createTime}}</span>-->
+          <span class="order-time">创建时间： {{orderInfo.createTime|dateFormat}}</span>
 
         </div>
       </div>
       <!--      订单信息end-->
 
       <!--      快递评价start-->
-      <el-row class="delivery-review-title" :gutter="0">
+    <!--  <el-row class="delivery-review-title" :gutter="0">
         <el-col :span="2"><img style="margin: 10px 20px;"
                                src="//misc.360buyimg.com/user/myjd/comment/1.0.0/css/i/bg-who1.png"></el-col>
         <el-col :span="3">
@@ -46,7 +46,7 @@
             </el-rate>
           </div>
         </el-col>
-      </el-row>
+      </el-row>-->
       <!--      快递评价end-->
 
       <!--      商品评价start-->
@@ -131,6 +131,7 @@
       this.orderInfo.skuPrice = this.$route.query.skuPrice;
       this.orderInfo.skuPic = this.$route.query.skuPic;
       this.orderInfo.spuId = this.$route.query.spuId
+      this.orderInfo.createTime = this.$route.query.createTime
     },
     methods: {
 
@@ -180,6 +181,7 @@
             resources: this.fileList,
             content: this.content,
             star: this.star,
+            orderSn:this.orderInfo.id
           },
            dataType:"json",
 

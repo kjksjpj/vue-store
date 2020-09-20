@@ -3,79 +3,71 @@
 
 
     <!-- 分类标签 -->
-    <div class="nav" style="background-color:#fbfdff;height:auto;display: flex;flex-direction: column;margin: 0px 30px 10px 30px;padding: 10px 0px 10px 20px">
-
-
-      <div class="product-nav"  style="margin-bottom: 10px;">
-        <div class="title" style="width:6%;height:auto;margin-right: 10px"> </div>
+    <div class="nav" style="background-color:#fbfdff;height:auto;display: flex;flex-direction: column;margin: 0px 0px 10px 0px;">
+        <span style="border-bottom:1px dashed #ddd;"></span>
+      <div class="product-nav"  style="margin: 10px 0 0px 0px">
+<!--        <div class="title" style="width:6%;height:auto;margin-right: 10px"> </div>-->
         <div class="tag-group">
-          <ul  v-for="item in categoryList" :key="item.catId">
-              <li style="font-size: 15px;float:left; list-style:none;margin:0px 0px 10px 0px;cursor: pointer;"
-                       @click="categoryClick(item.catId);categoryClick1(item.catId,1);displayChange(1)">
-                     <a class="category" >{{item.name}}<el-divider direction="vertical"></el-divider></a>
+          <ul  v-for="(item,index) in categoryList" :key="item.catId" style="margin-left: 50px">
+              <li :class="{active:oneIndex==index}" style="font-size: 15px;float:left;margin-left: 30px;color: #666; list-style:none;cursor: pointer;"
+                       @click="categoryClick(item.catId,index);displayChange(1)">
+                     <a class="category" :title="item.name">{{item.name}}</a>
               </li>
           </ul>
         </div>
       </div>
+        <span  style="border-bottom:1px dashed #ddd; margin-top: 10px"></span>
 
-      <div class="product-nav-change" :style="styleObject1" >
-        <div class="title" style="width:6%;height:auto;margin-right: 10px"></div>
+      <div class="product-nav-change" style="margin: 10px 0 0px 0" >
+<!--        <div class="title" style="width:6%;height:auto;margin-right: 10px"></div>-->
         <div class="tag-group" >
-          <ul  v-for="item in categoryList2" :key="item.catId">
-            <li style="font-size: 15px;float:left; list-style:none;margin:0px 0px 10px 0px;cursor: pointer"
-                @click="categoryClickk(item.catId),categoryClick1(item.catId,2),displayChange(2)" >
-                  <a class="category" > {{item.name}}<el-divider direction="vertical"></el-divider></a>
+          <ul  v-for="(item,index) in categoryList2" :key="item.catId" style="margin-left: 50px">
+            <li :class="{active:twoIndex==index}" style="font-size: 15px;float:left;margin-left: 30px;color: #666; list-style:none;cursor: pointer"
+                @click="categoryClickk(item.catId,index),displayChange(2)" >
+                  <a class="category">{{item.name}}</a>
             </li>
           </ul>
         </div>
       </div>
-
-      <div class="product-nav-change"  :style="styleObject2" >
-        <div class="title" style="width:6%;height:auto;margin-right: 10px"></div>
+        <span v-if="this.categoryList2.length!=0" style="border-bottom:1px dashed #ddd; margin-top: 10px"></span>
+      <div class="product-nav-change" style="margin: 10px 0 0px 0" >
+<!--        <div class="title" style="width:6%;height:auto;margin-right: 10px"></div>-->
         <div class="tag-group" >
-          <ul  v-for="item in categoryList3" :key="item.catId">
-            <li style="font-size: 15px;float:left; list-style:none;margin:0px 0px 10px 0px;cursor: pointer"
-                @click="categoryClickkk(item.catId);categoryClick1(item.catId,3);" >
-              <a class="category" > {{item.name}}<el-divider direction="vertical"></el-divider></a>
+          <ul  v-for="(item,index) in categoryList3" :key="item.catId" style="margin-left: 50px">
+            <li :class="{active:threeIndex==index}" style="font-size: 15px;float:left; list-style:none;margin-left: 30px;color: #666;cursor: pointer"
+                @click="categoryClickkk(item.catId,index);" >
+              <a class="category" > {{item.name}}</a>
             </li>
           </ul>
         </div>
       </div>
+        <span v-if="this.categoryList3.length!=0" style="border-bottom:1px dashed #ddd;margin:10px 0 10px 0 "></span>
 
-      <div style="margin-bottom: 10px">
-        <el-tag style="margin-right: 5px" color="#ffffff" size="mini"
-                v-for="tag in tags"
-                :key="tag.id"
-        >
-          <p style="color: #f91424;">{{tag.name}}</p>
-        </el-tag>
-      </div>
+        <div class="tag-group">
+            <ul v-for="item in productbrand" :key="item.id" style="margin-left: 50px">
+
+                <li style="font-size: 15px;float:left; list-style:none;margin-left: 30px;color: #666;cursor: pointer" @click="getProductByBrandId(item.id)">
+                    <a class="category">{{item.name}}</a>
+                </li>
+
+            </ul>
+        </div>
+        <span v-if="this.productbrand.length!=0" style="border-bottom:1px dashed #ddd;margin:10px 0 10px 0 "></span>
+        <div style="height: 33px;display: flex;margin-left: 5%" v-if="product.length>0" >
+            <ul >
+                <li style="font-size: 15px;float:left; list-style:none;color: #666;cursor: pointer" >
+                <span title="价格"  class="priceButton" href="javascript:void(0);" @click="searchPrice()">
+                    价格&nbsp;<span >{{this.priceflag}}</span></span>
+                </li>
+            </ul>
+        </div>
+
 
     </div>
     <!-- 分类标签END -->
 
     <!--品牌展示区域 及 价格升降序-->
     <!--只有当点击三级分类的时候 才会显示这个区域 还没做-->
-    <div style="height: 33px;display: flex;"  >
-      <div class="title" style="width:8%;height:50px;margin-right: 10px;padding-left: 50px"><span class="tag-group__title">所有品牌：</span></div>
-      <ul v-for="item in productbrand" :key="item.id">
-        <li style="float:left; list-style:none;margin:0px 10px 0px 0px;cursor: pointer" @click="getProductByBrandId(item.id)">
-            <a class="category">{{item.name}}</a>
-        </li>
-      </ul>
-
-      <div style="margin: 0px 10px 0px 500px">
-        <a href="javascript:;" class="curr" >
-          <span class="fs-tit" style="">价格</span>
-          <em class="fs-up" style="font-style: normal;">
-            <button @click="priceSort(1)" ><i class="el-icon-caret-top" ></i></button>
-            <button @click="priceSort(2)"><i class="el-icon-caret-bottom"></i></button>
-          </em>
-        </a>
-      </div>
-    </div>
-
-    <!--品牌展示区域END 及 价格升降序-->
 
 
     <!-- 主要内容区 -->
@@ -89,7 +81,7 @@
 
 
       <!-- 分页 -->
-      <div class="pagination">
+      <div class="pagination" v-if="product.length>0">
         <el-pagination
                 background
                 layout="prev, pager, next"
@@ -121,6 +113,12 @@
           marginBottom: '10px',
           display: 'none'
         },
+        oneIndex:-1,
+        twoIndex:-1,
+        threeIndex:-1,
+        priceSearch:'',
+        priceflag:'↑',
+        priceIndex:1,
         tags: [
           { id:1,name: '未选择'},
           { id:2,name: '未选择'},
@@ -192,40 +190,23 @@
 
         },
 
+        searchPrice(){
+            let flag=this.priceIndex
+            //升序
+            if (flag==1){
+                this.priceflag='↑'
+                this.priceIndex=2
+                this.product.sort((a,b)=>a.price-b.price)
+            }
+            //降序
+            if (flag==2){
+                this.priceflag='↓'
+                this.priceIndex=1
+                this.product.sort((a,b)=>b.price-a.price)
+            }
+            this.priceSearch="1"
 
-    //价格升降序
-     priceSort:function(flag){
-           if(flag==1){
-             //把商品按价格升序排列
-             this.product.sort((a,b)=>a.price-b.price)
-           }else if (flag==2){
-             //把商品按价格降序排列
-             this.product.sort((a,b)=>b.price-a.price)
-           }
-      },
-
-    /*  up(name){
-        return function (obj1, obj2) {
-          let val1 = obj1[name]
-          let val2 = obj2[name]
-          return val1 - val2
-        }
-      },
-      down (name) {
-        return function (obj1, obj2) {
-          let val1 = obj1[name]
-          let val2 = obj2[name]
-          return val2 - val1
-        }
-      },*/
-
-     /* mouseOver: function(){
-        this.active = 'color:#f91424';
-      },
-      mouseLeave: function () {
-        this.active = '';
-      },*/
-
+        },
       //每次点击全部商品就会获取所有的商品
       getAllProduct(){
         //console.log("进来了")
@@ -307,39 +288,45 @@
                 )
       },
 
-      //点击分类，将标签改为选中的分类名称
-      categoryClick1:function (catId,level){
-        if(level==1){
-          //点击一级 把二级三级置为未选择
-          this.tags[1].name="未选择";
-          this.tags[2].name="未选择";
-          //用find（）方法根据catId查找categorylist中相应的对象，注意：不能用过滤器 不能改变原对象数组的值
-          let item = this.categoryList.find((item)=>{
-            //千万注意这里是三个===  被坑了一个小时
-            return  item.catId === catId;
-          })
-          //把找到的item.name赋给this.tags[0].name
-          this.tags[0].name=item.name;
-        }else if(level==2){
-          //点击二级 把三级置为未选择
-          this.tags[2].name="未选择";
-          let item = this.categoryList2.find((item)=>{
-            return  item.catId === catId;
-          }
-          )
-          this.tags[1].name=item.name;
-        }else {
-          let item = this.categoryList3.find((item)=>{
-            return  item.catId === catId;
-          })
-          this.tags[2].name=item.name;
-        }
-
-      },
+      // //点击分类，将标签改为选中的分类名称
+      // categoryClick1:function (catId,level){
+      //   if(level==1){
+      //     //点击一级 把二级三级置为未选择
+      //     this.tags[1].name="未选择";
+      //     this.tags[2].name="未选择";
+      //     //用find（）方法根据catId查找categorylist中相应的对象，注意：不能用过滤器 不能改变原对象数组的值
+      //     let item = this.categoryList.find((item)=>{
+      //       //千万注意这里是三个===  被坑了一个小时
+      //       return  item.catId === catId;
+      //     })
+      //     //把找到的item.name赋给this.tags[0].name
+      //     this.tags[0].name=item.name;
+      //   }else if(level==2){
+      //     //点击二级 把三级置为未选择
+      //     this.tags[2].name="未选择";
+      //     let item = this.categoryList2.find((item)=>{
+      //       return  item.catId === catId;
+      //     }
+      //     )
+      //     this.tags[1].name=item.name;
+      //   }else {
+      //     let item = this.categoryList3.find((item)=>{
+      //       return  item.catId === catId;
+      //     })
+      //     this.tags[2].name=item.name;
+      //   }
+      //
+      // },
 
       //点击一级分类跳出相应的二级分类
-      categoryClick:function (catId) {
+      categoryClick:function (catId,index) {
         //console.log(catId)
+        this.priceflag='↑';
+          this.oneIndex=index
+          this.categoryList2 ='';
+          this.twoIndex =-1;
+          this.threeIndex =-1;
+          this.categoryList3 ='';
         this.$axios
                 .get(this.$target1+"/pms/category",{
                   params:{
@@ -358,8 +345,11 @@
       },
 
       //点击二级分类跳出相应的三级分类
-      categoryClickk:function (catId) {
+      categoryClickk:function (catId,index) {
         //console.log(catId)
+          this.priceflag='↑';
+          this.twoIndex=index;
+          this.categoryList3 ='';
         this.$axios
                 .get(this.$target1+"/pms/category",{
                   params:{
@@ -378,7 +368,9 @@
       },
 
       //点击三级分类出来相应的商品，同时出来商品的所有品牌
-      categoryClickkk:function(catId){
+      categoryClickkk:function(catId,index){
+        this.priceflag='↑';
+          this.threeIndex=index
         this.$axios
                 .get(this.$target1+"/search", {
                   params:{
@@ -463,6 +455,20 @@
 </script>
 
 <style >
+    .priceButton{
+        /*color: red;*/
+        display: block;
+        padding: 0 10px 0px;
+        line-height: 30px;
+        color: #666;
+        font-size: 14px;
+        background-color: #dec2a6;
+    }
+
+  .active {
+    background: #dec2a6;
+    /*border-radius: 5px;*/
+  }
  /* 价格升降序css*/
   a.curr {
     float: left;
@@ -484,8 +490,9 @@
     background-color: #73c2d7;
   }
   a.category:hover{
-    color: #f91424;
+    color: #ff6700;
     display:block;
+
   }
   .goods {
     background-color: #f5f5f5;
@@ -508,12 +515,6 @@
     margin: 0px 50px 10px 50px;
   }
 
-  /* 面包屑CSS END */
-
-  /* 分类标签CSS */
- /* .goods .nav {
-    background-color: white;
-  }*/
 
 
   .nav .product-nav .title {

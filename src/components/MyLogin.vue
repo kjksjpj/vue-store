@@ -24,16 +24,18 @@
           <el-button size="medium" type="primary" @click="Login" style="width:100%;">登录</el-button>
         </el-form-item>
       </el-form>
-<!--      <span>您还没有账户？=></span><el-button type="text" @click="isLogin = false,isRegister=true">注册</el-button>-->
+      <!-- <span>您还没有账户？=></span><el-button type="text" @click="isLogin = false,isRegister=true">注册</el-button>-->
     </el-dialog>
   </div>
 </template>
 <script>
   import {mapActions} from "vuex";
+  import cookie from 'js-cookie';
 
   export default {
     name: "MyLogin",
     data() {
+
       // 用户名的校验方法
       let validateName = (rule, value, callback) => {
         if (!value) {
@@ -70,6 +72,8 @@
           name: "",
           pass: ""
         },
+         millisecond:new Date().getTime(),
+         expiresTime:new Date(this.millisecond + 60 * 1000 * 15),
         // 用户信息校验规则,validator(校验方法),trigger(触发方式),blur为在组件 Input 失去焦点时触发
         rules: {
           name: [{validator: validateName, trigger: "blur"}],
@@ -92,6 +96,7 @@
     methods: {
       ...mapActions(["setUser", "setShowLogin"]),
       Login() {
+        //console.log(sessionStorage)
         // 通过element自定义表单校验规则，校验用户输入的用户信息
         this.$refs["ruleForm"].validate(valid => {
               // 如果通过校验开始登录
@@ -108,7 +113,10 @@
                 })
                     .then(res => {
                       // “0”代表登录成功，其他的均为失败
+                      // console.log(document.cookie)
+                      cookie.set('MALL_TOKEN',res.data.data,{expires: this.expiresTime },{domain:'localhost'})
                       if (res.data.code == 0) {
+
                         this.$axios
                             .get(this.$target1 + "/ums/member/getUserInfo", {
                               withCredentials: true
@@ -116,6 +124,7 @@
                             .then(res1 => {
                               // “0”代表发送成功，其他的均为失败
                               if (res1.data.code == 0) {
+                                //在这里应该将token保存在本地
                                 // 登录信息存到本地
                                 let user = JSON.stringify(res1.data.data);
                                 localStorage.setItem("user", user);
@@ -159,5 +168,6 @@
     }
   };
 </script>
+
 <style>
 </style>

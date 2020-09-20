@@ -67,9 +67,9 @@
             <li v-for="item in orderConfirmInfo.orderItems" :key="item.id">
               <img @click="toDetail(item.skuId)" :src="item.defaultImages" style="cursor: pointer" />
               <span @click="toDetail(item.skuId)" class="pro-name" style="cursor: pointer">{{item.title}}</span>
-              <span class="pro-price">{{item.price}}元 x {{item.count}}</span>
+              <span class="pro-price">{{item.price|priceFormat}}元 x {{item.count}}</span>
               <span class="pro-status"></span>
-              <span class="pro-total">{{item.price * item.count}}元</span>
+              <span class="pro-total">{{ (item.price * item.count)|priceFormat}}元</span>
             </li>
           </ul>
         </div>
@@ -106,7 +106,7 @@
             </li>
             <li>
               <span class="title">商品总价：</span>
-              <span class="value">{{totalPrice}}元</span>
+              <span class="value">{{totalPrice|priceFormat}}元</span>
             </li>
             <li>
               <span class="title">活动优惠：</span>
@@ -127,7 +127,7 @@
             <li class="total">
               <span class="title">应付总额：</span>
               <span class="value">
-                <span class="total-price">{{totalPrice}}</span>元
+                <span class="total-price">{{totalPrice|priceFormat}}</span>元
               </span>
             </li>
 
@@ -149,7 +149,7 @@
                   :before-close="handleClose">
             <span>是否完成支付</span>
             <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">取消</el-button>
+              <el-button @click="dialogVisible = false,transmit()">取消</el-button>
               <el-button type="primary" @click="dialogVisible = false,transmit()">完成</el-button>
             </span>
           </el-dialog>
@@ -163,6 +163,7 @@
 <script>
 import { mapActions } from "vuex";
 import Address from "../components/Address";
+import {getDistributionUserInfo, join} from "@/assets/js/Distribution"
 
 export default {
   name: "",
@@ -239,7 +240,10 @@ export default {
   },
 
   methods: {
-    ...mapActions(['deleteShoppingCart', 'setWhoShare', 'setDistInfo', 'setIsJoinDist']),
+    ...mapActions(["deleteShoppingCart", 'setWhoShare', 'setDistInfo', 'setIsJoinDist']),
+
+
+
     addOrder() {
     /*  this.$axios
         .post("/api/user/order/addOrder", {
@@ -309,17 +313,16 @@ export default {
             switch (res.data.code) {
               case 0: {
                 //获得分销系统的用户信息
-                this.getDistributionUserInfo();
+                getDistributionUserInfo();
                 //查看是否有邀请人
-                if (this.$store.state.shareInfo.whoShare !== undefined) {
+                if (this.$store.state.shareInfo.whoShare != undefined) {
                   if (this.$store.state.user.isJoinDist === false) {
                     //加入分销
-                    this.join();
+                    join(this.$store.state.shareInfo.whoShare);
                   }
                   //分销的交易结算
-                    this.distTrade(this.orderConfirmInfo.orderToken, this.totalPrice)
+                  this.distTrade(this.orderConfirmInfo.orderToken, this.totalPrice)
                 }
-                //在分销系统中提交交易
                 this.newHtml = res.data.data;
                 let myWindow=window.open('','','fullscreen=1');
                 myWindow.document.write(this.newHtml)
@@ -332,69 +335,6 @@ export default {
           });
 
     },
-
-    //查看用户分销信息
-    getDistributionUserInfo() {
-      let user = this.$store.state.user.user;
-      this.$axios
-          .get(this.$target2 + "/api/v1/getUserInfo", {params: {userId: user.username}})
-          .then(res => {
-            if (res.data.success === true) {
-              this.setDistInfo(res.data.data);
-              this.setDistInfo(true);
-            }
-          })
-          .catch(err => {
-            return Promise.reject(err);
-          });
-    },
-    //分销交易
-    distTrade(id, price) {
-      this.$axios({
-        method: 'post',
-        url: this.$target2 + "/api/v1/trade",
-        data: {
-          disAmount: price,
-          disSetUserId: this.$store.state.user.user.username,
-          orderId: id,
-          secret: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MzExMTczMzk4MDcsInBheWxvYWQiOiJcInhpYW9qaWFuZ1wiIn0.rOY3JXrYpNMWwATmY7r3jm0Ec6SuhNPyrP2rGD43Isk",
-        }
-      })
-          .then(res => {
-              console.log(res)
-          })
-          .catch(err => {
-            return Promise.reject(err);
-
-          })
-    },
-
-    //加入分销
-    join() {
-      let user = this.$store.state.user.user;
-      this.$axios({
-        method: 'post',
-        url: this.$target2 + "/api/v1/memberAdd",
-        data: {
-          disModelId: this.$store.state.shareInfo.whoShare,
-          disNote: "nothing",
-          disPlatformId: "dist",
-          disUserName: user.username,
-          disUserId: user.username,
-          secret: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MzExMTczMzk4MDcsInBheWxvYWQiOiJcInhpYW9qaWFuZ1wiIn0.rOY3JXrYpNMWwATmY7r3jm0Ec6SuhNPyrP2rGD43Isk",
-        }
-      })
-          .then(res => {
-            if (res.data.success === true) {
-              this.getDistributionUserInfo();
-            }
-          })
-          .catch(err => {
-            return Promise.reject(err);
-          });
-
-    },
-
     //创建页面时，获取需确认订单信息
     getOrderConfirm() {
       this.$axios
@@ -435,6 +375,26 @@ export default {
     getAddressJson(){
       this.dialogFormVisible = false;
       this.getOrderConfirm();
+    },
+    //分销交易
+    distTrade(id, price) {
+      this.$axios({
+        method: 'post',
+        url: this.$target2 + "/api/v1/trade",
+        data: {
+          disAmount: price,
+          disSetUserId: this.$store.state.user.user.username,
+          orderId: id,
+          secret: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MzExMTczMzk4MDcsInBheWxvYWQiOiJcInhpYW9qaWFuZ1wiIn0.rOY3JXrYpNMWwATmY7r3jm0Ec6SuhNPyrP2rGD43Isk",
+        }
+      })
+          .then(res => {
+            console.log(res)
+          })
+          .catch(err => {
+            return Promise.reject(err);
+
+          })
     },
   }
 };

@@ -257,6 +257,9 @@ export default {
                 this.isRegister = false;
                 // 弹出通知框提示注册成功信息
                 this.notifySucceed(res.data.msg);
+                if(this.$store.state.shareInfo.whoShare != undefined) {
+                  this.joinDist(this.name, this.$store.state.shareInfo.whoShare);
+                }
               } else {
                 // 弹出通知框提示注册失败信息
                 this.notifyError(res.data.msg);
@@ -279,10 +282,7 @@ export default {
             .then(res => {
               // “0”代表发送成功，其他的均为失败
               if (res.data.code == 0) {
-                if(this.$store.state.shareInfo.whoShare != undefined) {
-                  this.joinDist(this.name, this.$store.state.shareInfo.whoShare);
-                }
-                  // 弹出通知框提示注册成功信息
+                // 弹出通知框提示注册成功信息
                 this.notifySucceed(res.data.msg);
               } else {
                 // 弹出通知框提示注册失败信息
@@ -327,11 +327,11 @@ export default {
       })
           .then(res => {
             if (res.data.success === true) {
-              // this.getDistributionUserInfo();
-              console.log('加入分销成功')
+              this.notifySucceed('加入分销成功')
             }
           })
           .catch(err => {
+            this.notifyError(err.data.errorMessage);
             return Promise.reject(err);
           });
     },

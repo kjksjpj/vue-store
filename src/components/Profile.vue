@@ -1,15 +1,11 @@
 
 <template>
-  <div class="all-container">
-    <div class="all-container-padding bg" >
+  <div style="margin-left: 20px;">
+    <div style="width:800px;">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="基本信息" name="first">
           <el-form :model="userlist" :rules="rules" ref="EditorUserForms">
             <el-form-item label="头像" prop="avatar_url" :label-width="formLabelWidth">
-<!--              <el-upload class="avatar-uploader" action="//shujiaoke.oss-cn-hangzhou.aliyuncs.com" :before-upload="beforeupload" :data="uploadParm" :show-file-list="false" :on-success="handleUpSuccess">-->
-<!--                <img v-if="userlist.avatar_url" :src="userlist.avatar_url" class="avatar">-->
-<!--                <i v-else class="el-icon-plus avatar-uploader-icon " style="width:80px;height:80px;"></i>-->
-<!--              </el-upload>-->
               <el-upload
                       class="avatar-uploader"
                       action="http://3v3g463245.qicp.vip/pms/store/uploadOssFile"
@@ -21,10 +17,10 @@
               </el-upload>
             </el-form-item>
             <el-form-item label="用户名" prop="username" :label-width="formLabelWidth">
-              <el-col :span="8"> <el-input v-model="userlist.username" disabled ></el-input></el-col>
+              <el-col :span="12"> <el-input v-model="userlist.username" disabled ></el-input></el-col>
             </el-form-item>
             <el-form-item label="昵称" prop="nickname" :label-width="formLabelWidth">
-              <el-col :span="8">  <el-input v-model="userlist.nickname" placeholder="请输入昵称"></el-input></el-col>
+              <el-col :span="12">  <el-input v-model="userlist.nickname" placeholder="请输入昵称"></el-input></el-col>
             </el-form-item>
             <el-form-item label="性别" prop="sex" :label-width="formLabelWidth">
               <el-col :span="8">
@@ -37,7 +33,7 @@
               </el-col>
             </el-form-item>
             <el-form-item label="手机号" prop="mobile" :label-width="formLabelWidth">
-              <el-col :span="8">  <el-input v-model="userlist.mobile" placeholder="请输入手机号"></el-input></el-col>
+              <el-col :span="12">  <el-input v-model="userlist.mobile" placeholder="请输入手机号"></el-input></el-col>
             </el-form-item>
 <!--            <el-form-item label="银行卡号" prop="account" :label-width="formLabelWidth">-->
 <!--              <el-col :span="8"> <el-input v-model="userlist.account" placeholder="请输入银行卡号"></el-input></el-col>-->
@@ -55,13 +51,13 @@
         <el-tab-pane label="修改密码" name="second">
           <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
             <el-form-item label="原密码" prop="pass" :label-width="formLabelWidth">
-              <el-col :span="8">  <el-input v-model="ruleForm.pass" placeholder="请输入原密码" type="password"></el-input></el-col>
+              <el-col :span="12">  <el-input v-model="ruleForm.pass" placeholder="请输入原密码" type="password" show-password></el-input></el-col>
             </el-form-item>
             <el-form-item label="新密码" prop="newpass" :label-width="formLabelWidth">
-              <el-col :span="8"><el-input v-model="ruleForm.newpass" placeholder="请输入新密码" id="newkey" type="password"></el-input></el-col>
+              <el-col :span="12"><el-input v-model="ruleForm.newpass" placeholder="请输入新密码" id="newkey" type="password" show-password></el-input></el-col>
             </el-form-item>
             <el-form-item label="重复新密码" prop="checknewpass" :label-width="formLabelWidth">
-              <el-col :span="8">  <el-input v-model="ruleForm.checknewpass" placeholder="请再次输入新密码" id='newkey1' type="password"></el-input></el-col>
+              <el-col :span="12">  <el-input v-model="ruleForm.checknewpass" placeholder="请再次输入新密码" id='newkey1' type="password" show-password></el-input></el-col>
             </el-form-item>
           </el-form>
           <div class="btnstyle">
@@ -74,21 +70,18 @@
 </template>
 <script>
   //这一步很重要，一般我们直接从后台拿过来输出来会是在data里面，但是我发现却在store里面，这里就要用到vuex
-  import { mapGetters } from "vuex";
+  import {mapActions, mapGetters} from "vuex";
   export default {
     data() {
       /*****检验两次密码是否一致***/
       let validatePass = (rule, value, callback) => {
-        const passwordRule = /^[a-zA-Z]\w{5,17}$/;
         if (value === "") {
           callback(new Error("请输入新密码"));
-        } else if (passwordRule.test(value)&&this.ruleForm.checknewpass !== ""){
+        } else if (this.ruleForm.checknewpass !== ""){
             this.$refs.ruleForm.validateField("checknewpass");
             return callback();
           }else{
-          return callback(
-                  new Error("字母开头,长度6-18之间,允许字母数字和下划线")
-              );
+          return callback();
           }
         };
       let validatePass2 = (rule, value, callback) => {
@@ -110,8 +103,7 @@
           sex:'',
           mobile:'',
         },//用户信息表单
-        formLabelWidth: "150px",
-        // imageUrl: '',
+        formLabelWidth: "280px",
         /***校验***/
         rules: {
           pass: [
@@ -123,46 +115,58 @@
           ],
           newpass: [
             {
+              required: true,
               validator: validatePass,
               trigger: "blur"
             }
           ],
           checknewpass: [
             {
+              required: true,
               validator: validatePass2,
               trigger: "blur"
             }
           ],
+          header:[
+            {
+              required: true,
+              message:'请上传头像'
+            }
+          ],
+          nickname:[
+            {
+              required: true,
+              message:'请填写昵称'
+            }
+          ],
+          sex:[
+            {
+              required: true,
+              message:'请选择性别'
+            }
+          ],
+          mobile:[
+            {
+              required: true,
+              message:'请填写手机号'
+            }
+          ]
         }
       };
     },
     created() {
       this.getUser();
-      // this.upload();
     },
     computed: {
       ...mapGetters(["username"])
     },
     methods: {
-      save(){
-        alert("已保存")
-      },
+      ...mapActions(["setUser"]),
+      //上传图片
       handleAvatarSuccess(response, file) {
         this.userlist.header=file.response.data;
         console.log(this.userlist.header);
       },
-      // beforeAvatarUpload(file) {
-      //   // const isJPG = file.type === 'image/jpeg';
-      //   // const isLt2M = file.size / 1024 / 1024 < 2;
-      //   //
-      //   // if (!isJPG) {
-      //   //   this.$message.error('上传头像图片只能是 JPG 格式!');
-      //   // }
-      //   // if (!isLt2M) {
-      //   //   this.$message.error('上传头像图片大小不能超过 2MB!');
-      //   // }
-      //   // return isJPG && isLt2M;
-      // },
       // 获取个人用户的信息
       getUser() {
         this.$axios
@@ -184,120 +188,103 @@
             });
       },
       //tab切换
-      handleClick(tab, event) {
-        console.log(tab, event);
+      handleClick(tab) {
+        if(tab.name == 'first'){
+          // 触发‘获取个人信息’事件
+          this.getUser();
+        }
       },
-      //上传参数图片初始化
-      // upload() {
-      //   const currentTimeStamp = new Date().getTime() / 1000;
-      //   if (
-      //       this.uploadParams == null ||
-      //       this.uploadParams.expire + 3 < currentTimeStamp
-      //   ) {
-      //     this.$store
-      //         .dispatch("GetUploadParams")
-      //         .then(req => {
-      //           this.uploadParm = req.data;
-      //         })
-      //         .catch(err => {
-      //           this.$message({ message: err.message, type: "warning" });
-      //         });
-      //   } else {
-      //     this.uploadParm = this.uploadParams;
-      //   }
-      // },
-      // 上传之前
-      // beforeupload() {
-      //   this.uploadParm.key = this.uploadParm.dir
-      //       + guid();
-      //   console.log(this.uploadParm)
-      // },
-      //图片上传上传成功
-      // handleUpSuccess(response, file) {
-      //   var newfile = {
-      //     name: file.name,
-      //     type: file.raw.type,
-      //     // size: bytesToSize(file.size),
-      //     url: this.uploadParm.key
-      //   };
-      //   // postData("file", newfile)
-      //   this.$axios({
-      //     method:'post',
-      //     url:"file",
-      //     params:{
-      //       newfile
-      //     }
-      //   })
-      //       .then(response => {
-      //     if (response.status == 200) {
-      //       this.$message({ message: "修改成功", type: "success" });
-      //       this.userlist.style_file_id = response.data.id;
-      //       this.userlist.avatar_url = this.baseUrl + response.data.url;
-      //     } else {
-      //       this.$message({ message: "修改失败", type: "error" });
-      //     }
-      //   });
-      //   console.log(this.userlist);
-      // },
       //修改密码
       submitForm() {
-        let obj = {
-          username: this.username,
-          password: this.pass,
-          newpwd: this.newpass
-        };
-        // console.log(obj);
-        // postData("接口", obj)
-        this.$axios({
-          method:'post',
-          url:this.$target1+"/ums/member/update",
-          params:{
-            obj
-          }
-        })
-            .then(response => {
-          if (response.status == 200) {
-            this.$message({
-              message: "保存成功",
-              type: "success"
-            });
-          } else {
-            this.$message({
-              message: "修改失败" + response.message,
-              type: "error"
-            });
-          }
-        });
+        // 密码以字母开头,长度在6-18之间,允许字母数字和下划线
+        const passwordRule = /^[a-zA-Z]\w{5,17}$/;
+        if(!passwordRule.test(this.ruleForm.newpass)){
+          alert("密码以字母开头,长度在6-18之间,允许字母数字和下划线");
+        }else{
+          this.$refs.ruleForm.validate(valid => {
+            if(valid) {
+              this.$axios
+                  .get(this.$target1 + "/ums/member/updatePassword", {
+                    params: {
+                      password: this.ruleForm.pass,
+                      newpassword: this.ruleForm.newpass,
+                    }
+                  })
+                  .then(response => {
+                    if (response.data.code == 0) {
+                      this.$message({
+                        message: "修改成功",
+                        type: "success"
+                      });
+                      this.ruleForm.pass='';
+                      this.ruleForm.newpass='';
+                      this.ruleForm.checknewpass='';
+                      // this.activeName='first';
+                      // 清空本地登录信息
+                      localStorage.setItem("user", "");
+                      // 清空vuex登录信息
+                      this.setUser("");
+                      this.notifySucceed("修改密码成功，已退出登录，请重新登录");
+                      this.$router.push({path:'/'});//跳到首页
+                    }else if (response.data.code == 1) {
+                      alert("原始密码填写错误，修改失败！")
+                    } else {
+                      this.$message({
+                        message: "修改失败" + response.message,
+                        type: "error"
+                      });
+                    }
+                  })
+                  .catch(err => {
+                return Promise.reject(err);
+              });
+            }else{
+              alert("修改密码信息填写有误");
+              return false;
+            }
+          })
+        }
       },
       // 编辑提交的方法
       EditorUserClick() {
-        this.$refs.EditorUserForms.validate(valid => {
-          if (valid) {
-            this.$axios({
-              method:'post',
-              url:this.$target1+"/ums/member/update",
-              params:{
-                header:this.userlist.header,
-                nickname:this.userlist.nickname,
-                gender:this.userlist.sex,
-                mobile:this.userlist.mobile
-              }
-            })
-                .then(response => {
-              if (response.status == 200) {
-                this.$message({
-                  message: "编辑成功",
-                  type: "success"
-                });
-              } else {
-                this.$message({
-                  message: "修改失败" + response.message,
-                  type: "error"
-                });
-              }
-            });
-          }
-        });
+        //手机号规则：表示以1开头，第二位可能是3/4/5/7/8/9等的任意一个，在加上后面的\d表示数字[0-9]的9位，总共加起来11位结束。
+        const userTelephoneRule =/^1[3|4|5|7|8|9]\d{9}$/;
+        if(!userTelephoneRule.test(this.userlist.mobile)){
+          alert("请填写11位数正确的手机号码");
+        }else if(this.userlist.header==''){
+          alert("请上传头像");
+        }else{
+          this.$refs.EditorUserForms.validate(valid => {
+            if (valid) {
+              this.$axios({
+                method:'post',
+                url:this.$target1+"/ums/member/update",
+                params:{
+                  header:this.userlist.header,
+                  nickname:this.userlist.nickname,
+                  gender:this.userlist.sex,
+                  mobile:this.userlist.mobile
+                }
+              })
+                  .then(response => {
+                    if (response.status == 200) {
+                      this.$message({
+                        message: "修改成功",
+                        type: "success"
+                      });
+                    } else {
+                      this.$message({
+                        message: "修改失败" + response.message,
+                        type: "error"
+                      });
+                    }
+                  });
+            }else{
+              alert("信息填写有误");
+              return false;
+            }
+          });
+        }
       }
     }
   };
@@ -327,7 +314,7 @@
     display: block;
   }
   .btnstyle{
-    margin:0 auto;
+    margin-left:380px;
     width:200px;
   }
 

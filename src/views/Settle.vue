@@ -80,8 +80,8 @@
                  </el-form-item>
              </el-form>
 
-             <div style="margin: 10px 10px 5px 40px;text-align: center">
-                 <el-button type="primary" style="margin-top: 12px;" @click="submitBase('ruleForm')">保存</el-button>
+             <div style="margin: 0 auto;text-align: center">
+                 <el-button type="primary" style="margin-top: 12px;" @click="submitBase('ruleForm')">下一步</el-button>
              </div>
          </div>
               <!--主体基本信息部分END-->
@@ -159,7 +159,8 @@
                       </el-form-item>
                   </el-form>
                   <div style="text-align: center">
-                      <el-button type="primary" style="margin-top: 12px;" @click="submitCert('ruleForm1')">保存</el-button>
+                      <el-button type="primary" style="margin-top: 12px;margin-right:5px" @click="back1">上一步</el-button>
+                      <el-button type="primary" style="margin-top: 12px;" @click="submitCert('ruleForm1')">下一步</el-button>
                   </div>
 
               </div>
@@ -169,18 +170,19 @@
 <!--                <span>-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;</span>-->
 <!--               <button  @click="back1">回到公司资质信息界面</button>-->
               </div>
-              <el-form ref="ruleForm2" :model="ruleForm2"   :rules="rules2" label-width="150px">
-                <el-form-item class="el-form-item" label="账号" prop="account" >
+              <el-form ref="ruleForm2" :model="ruleForm2"   :rules="rules2" label-width="100px">
+                <el-form-item class="el-form-item" label="账号" prop="account">
                   <el-input v-model="ruleForm2.account"></el-input>
                 </el-form-item>
                 <div style="height: 10px">
                 </div>
-                <el-form-item class="el-form-item" label="密码" prop="password" >
+                <el-form-item class="el-form-item" label="密码" prop="password">
                   <el-input v-model="ruleForm2.password" show-password></el-input>
                 </el-form-item>
               </el-form>
               <div style="text-align: center">
-                <el-button type="primary" style="margin-top: 12px;" @click="submitAct('ruleForm2')">激活，提交所有信息至后台审核</el-button>
+                <el-button type="primary" style="margin-top: 12px;margin-right:5px;" @click="back2">上一步</el-button>
+                <el-button type="primary" style="margin-top: 12px;" @click="submitAct('ruleForm2')">提交</el-button>
               </div>
             </div>
 
@@ -305,6 +307,48 @@
           this.certShow=false;
           this.actShow=false;
       },
+      activated(){
+          //一进来这个页面会做的事情
+        //地址插件置为空
+        this.province='';
+        this.city='';
+        this.region='';
+        //文件显示都置空
+        this.fileList=[];
+        this.fileList1=[];
+        this.fileList2=[];
+        //所有之前输入的值都置空
+        for(let key in this.ruleForm){
+          this.ruleForm[key] = '';
+        }
+        for(let key1 in this.ruleForm1){
+          this.ruleForm1[key1] = '';
+        }
+        for(let key2 in this.ruleForm2){
+          this.ruleForm2[key2] = '';
+        }
+        //出现第一个界面提示填写信息
+        this.baseShow=true;
+        this.certShow=false;
+        this.actShow=false;
+      //   console.log(this.ruleForm.name,
+      //       this.ruleForm.phone,
+      //       this.ruleForm.email,
+      //       this.ruleForm.companyName,
+      //       this.ruleForm.scope,
+      //       this.ruleForm.located,
+      //       this.ruleForm.address,
+      //       this.ruleForm.shopName,
+      //       this.ruleForm.shopType,
+      //       this.ruleForm1.lrName,
+      //       this.ruleForm1.lrId,
+      //       this.ruleForm1.imageUrl,
+      //       this.ruleForm1.licenseId,
+      //       this.ruleForm1.imageUrl1,
+      //       this.ruleForm1.imageUrl2,
+      //       this.ruleForm2.account,
+      //       this.ruleForm2.password)
+      },
         methods: {
             //地址插件选择时的方法
             onChangeProvince: function (a) {
@@ -322,23 +366,20 @@
             console.log("第一个上传之前");
             return true;
           },
-          //删除时存数据方法
-          handleRemove(file, fileList) {
-            this.ruleForm1.imageUrl=[];
-            for(let index in fileList){
-              this.ruleForm1.imageUrl.push(fileList[index].response.data);
+          //删除时方法
+          handleRemove(file) {
+            for(let i=0;i<this.fileList.length;i++){
+              if(file.uid==this.fileList[i].uid){
+                this.fileList.splice(i,1);
+              }
             }
-            console.log(this.ruleForm1.imageUrl);
+            console.log(this.fileList);
           },
           //上传成功时存数据方法
-            handleAvatarSuccess(response,file,fileList) {
-              this.ruleForm1.imageUrl=[];
-              for(let index in fileList){
-                this.ruleForm1.imageUrl.push(fileList[index].response.data);
-              }
-              // this.ruleForm1.imageUrl.push(file.response.data);
-              console.log(this.ruleForm1.imageUrl);
-            },
+          handleAvatarSuccess(response) {
+            this.fileList.push({url:response.data});
+            console.log(this.fileList);
+          },
           // 文件超出个数限制时的钩子
           exceedFile(){
             this.$message.error('只能上传'+this.limitNum+'个文件');
@@ -352,21 +393,18 @@
             console.log("第二个上传之前");
             return true;
           },
-          handleRemove1(file, fileList) {
-            this.ruleForm1.imageUrl1=[];
-            for(let index in fileList){
-              this.ruleForm1.imageUrl1.push(fileList[index].response.data);
-            }
-            console.log(this.ruleForm1.imageUrl1);
-          },
-            handleAvatarSuccess1(response,file,fileList) {
-              this.ruleForm1.imageUrl1=[];
-              for(let index in fileList){
-                this.ruleForm1.imageUrl1.push(fileList[index].response.data);
+          handleRemove1(file) {
+            for(let i=0;i<this.fileList1.length;i++){
+              if(file.uid==this.fileList1[i].uid){
+                this.fileList1.splice(i,1);
               }
-              // this.ruleForm1.imageUrl1.push(file.response.data);
-              console.log(this.ruleForm1.imageUrl1);
-            },
+            }
+            console.log(this.fileList1);
+          },
+          handleAvatarSuccess1(response) {
+            this.fileList1.push({url:response.data});
+            console.log(this.fileList1);
+          },
           exceedFile1(){
             this.$message.error('只能上传'+this.limitNum1+'个文件');
           },
@@ -378,20 +416,17 @@
             console.log("第三个上传之前");
             return true;
           },
-          handleRemove2(file, fileList) {
-            this.ruleForm1.imageUrl2=[];
-            for(let index in fileList){
-              this.ruleForm1.imageUrl2.push(fileList[index].response.data);
+          handleRemove2(file) {
+            for(let i=0;i<this.fileList2.length;i++){
+              if(file.uid==this.fileList2[i].uid){
+                this.fileList2.splice(i,1);
+              }
             }
-            console.log(this.ruleForm1.imageUrl2);
+            console.log(this.fileList2);
           },
-          handleAvatarSuccess2(response,file,fileList) {
-            this.ruleForm1.imageUrl2=[];
-            for(let index in fileList){
-              this.ruleForm1.imageUrl2.push(fileList[index].response.data);
-            }
-            // this.ruleForm1.imageUrl2.push(file.response.data);
-            console.log(this.ruleForm1.imageUrl2);
+          handleAvatarSuccess2(response) {
+            this.fileList2.push({url:response.data});
+            console.log(this.fileList2);
           },
           exceedFile2(){
             this.$message.error('只能上传'+this.limitNum2+'个文件');
@@ -410,13 +445,13 @@
                         const userEmailRule =/^\w+@[a-z0-9]+\.[a-z]{2,4}$/;
                         this.ruleForm.located=this.province+this.city+this.region;
                         if(!userTelephoneRule.test(this.ruleForm.phone)){
-                            alert("请填写11位数手机号码");
+                            alert("请填写11位数正确的手机号码");
                         }else if(!userEmailRule.test(this.ruleForm.email)){
                             alert("请填写正确的邮箱号：数字/字母/下划线+@+数字/英文+.+英文（长度是2-4）");
                         }else if(this.province==''||this.city==''||this.region==''){
                             alert("请选择省市区");
                         }else{
-                            this.notifySucceed("保存成功！");
+                            // this.notifySucceed("保存成功！");
                             this.baseShow=false;
                             this.certShow=true;
                         }
@@ -426,16 +461,15 @@
                     }
                 });
             },
-          //   back(){//回到第一个填写界面
-          //       this.baseShow=true;
-          //       this.certShow=false;
-          //       this.actShow=false;
-          //   },
-          // back1(){//回到第二个界面
-          //   this.certShow=true;
-          //   this.actShow=false;
-          //   console.log(this.fileList);
-          // },
+            back1(){//回到第一个填写界面
+                this.baseShow=true;
+                this.certShow=false;
+            },
+            back2(){//回到第二个界面
+                // this.baseShow=false;
+                this.certShow=true;
+                this.actShow=false;
+            },
           //这里不提交，只是保存当前第二个表单信息
             submitCert(formName) {
                 this.$refs[formName].validate((valid) => {
@@ -444,14 +478,14 @@
                         const reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
                         if(!reg.test(this.ruleForm1.lrId)){
                             alert("请填写正确身份证号");
-                        }else if(this.ruleForm1.imageUrl==''){
+                        }else if(this.fileList==''){
                             alert("请上传法人身份证电子照");
-                        }else if(this.ruleForm1.imageUrl1==''){
+                        }else if(this.fileList1==''){
                             alert("请上传营业执照电子照");
-                        }else if(this.ruleForm1.imageUrl2==''){
+                        }else if(this.fileList2==''){
                             alert("请上传银行开户许可电子照");
                         }else{
-                          this.notifySucceed("保存成功！");
+                          // this.notifySucceed("保存成功！");
                           this.certShow=false;
                           this.actShow=true;
                         }
@@ -463,6 +497,22 @@
             },
           //真正提交的是这里，三个表单信息一起提交
           submitAct(formName){
+            //图片赋值
+            this.ruleForm1.imageUrl=[];
+            for(let i=0;i<this.fileList.length;i++){
+              this.ruleForm1.imageUrl.push(this.fileList[i].url);
+            }
+            console.log(this.ruleForm1.imageUrl);
+            this.ruleForm1.imageUrl1=[];
+            for(let j=0;j<this.fileList1.length;j++){
+              this.ruleForm1.imageUrl1.push(this.fileList1[j].url);
+            }
+            console.log(this.ruleForm1.imageUrl1);
+            this.ruleForm1.imageUrl2=[];
+            for(let k=0;k<this.fileList2.length;k++){
+              this.ruleForm1.imageUrl2.push(this.fileList2[k].url);
+            }
+            console.log(this.ruleForm1.imageUrl2);
             this.$refs[formName].validate((valid) => {
               if (valid) {
                 this.$axios
@@ -502,7 +552,7 @@
                                 .then(response => {
                                   if (response.status == 200) {
                                     this.$message({
-                                      message: "激活成功",
+                                      message: "提交成功",
                                       type: "success"
                                     });
                                     //清空之前的填写值
@@ -516,15 +566,15 @@
                                       this.ruleForm2[key2] = '';
                                     }
                                     this.province='';//地址插件置为空
-                                    this.city='',
-                                    this.region='',
+                                    this.city='';
+                                    this.region='';
+                                    this.$router.push({path:'/settle/settle2'});//跳转到给用户提示的审核页面
                                     this.baseShow=true;//复原显示页面
                                     this.certShow=false;
                                     this.actShow=false;
-                                    this.$router.push({path:'/settle/settle2'});//跳转到给用户提示的审核页面
                                   } else {
                                     this.$message({
-                                      message: "激活失败" + response.message,
+                                      message: "提交失败" + response.message,
                                       type: "error"
                                     });
                                   }

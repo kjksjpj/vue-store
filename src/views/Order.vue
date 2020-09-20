@@ -14,6 +14,9 @@
           <p>
             <i class="el-icon-s-order" style="font-size: 30px;color: #ff6700;"></i>
             查看我的订单
+            <span style="font-size: small" v-if="orderStatus==0">
+              <i class="el-icon-back" style="font-size: 30px;color: #ff6700;"></i>去我的订单页面，查看所有待付款订单并重新付款
+            </span>
           </p>
         </router-link>
       </div>
@@ -51,9 +54,9 @@
             <div class="pro-name">
                 <span @click="toDetail(item.skuId)" style="position: absolute;top:20%;line-height: 30px;">{{item.title}}</span>
             </div>
-            <div class="pro-price">{{item.price}}元</div>
+            <div class="pro-price">{{item.price|priceFormat}}元</div>
             <div class="pro-num">{{item.count}}</div>
-            <div class="pro-total pro-total-in">{{item.price * item.count}}元</div>
+            <div class="pro-total pro-total-in">{{item.price * item.count|priceFormat}}元</div>
           </li>
         </ul>
         <div class="order-bar">
@@ -66,7 +69,7 @@
           <div class="order-bar-right">
             <span>
               <span class="total-price-title">合计：</span>
-              <span class="total-price">{{orders.totalPrice}}元</span>
+              <span class="total-price">{{orders.totalPrice|priceFormat}}元</span>
             </span>
           </div>
           <!-- 订单列表END -->
@@ -93,6 +96,7 @@ export default {
     return {
       orderStatus:0,//订单支付状态
       orders: {}, // 订单列表
+      timer:null,//定时器
     };
   },
   created(){
@@ -107,12 +111,26 @@ export default {
     console.log(this.orders)
     console.log(this.orders.orderToken)*/
 
-    //轮询请求 (每隔10s)后台订单状态
+    //轮询请求 (每隔4s)后台订单状态
     //订单还没生成就调用订单状态
    /* this.getOrderStatus();*/
+
    this.timer = setInterval(this.getOrderStatus,1000 * 4);
-
-
+   //页面离开时清除定时器配合下面这段代码才有效果！
+   this.$once('hook:beforeDestroy', () => {
+      clearInterval(this.timer);
+    });
+  },
+  //页面离开时清除定时器
+  beforeRouteLeave(to,from,next){
+     if(this.timer){
+       clearInterval(this.timer);
+     }
+     next();
+  },
+  //页面销毁时清除定时器
+  beforeDestroy(){
+    clearInterval(this.timer)
   },
   computed:{
     //计算商品总件数

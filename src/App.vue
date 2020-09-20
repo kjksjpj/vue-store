@@ -126,31 +126,35 @@
                       <router-link to="/user/address">
                           <el-dropdown-item>收货地址</el-dropdown-item>
                       </router-link>
-                      <router-link to="/order">
+                     <!-- <router-link to="/order">
                           <el-dropdown-item>我的钱包</el-dropdown-item>
-                      </router-link>
+                      </router-link>-->
                       <router-link to="/orderList"  target="_blank"  tag="a">
                           <el-dropdown-item>我的订单</el-dropdown-item>
                       </router-link>
-                      <router-link to="/collect">
+                  <!--    <router-link to="/collect">
                           <el-dropdown-item>收藏的商品</el-dropdown-item>
                       </router-link>
                       <router-link to="/collect">
                           <el-dropdown-item>关注的店铺</el-dropdown-item>
-                      </router-link>
+                      </router-link>-->
                   </el-dropdown-menu>
               </el-dropdown>
               </li>
               <!--heshan 个人中心END-->
 
             <li style="margin-right: 20px">
-              <router-link to="/Settlement">商家入驻</router-link>
-            </li>
-              <li style="margin-right: 20px">
-                  <router-link to="/check">查询审核</router-link>
-              </li>
-            <li style="margin-right: 20px">
-              <router-link to="/distribution">分销中心 </router-link>
+              <el-dropdown >
+                <span class="el-dropdown-link">商家入驻</span>
+                <el-dropdown-menu slot="dropdown">
+                  <router-link to="/Settlement">
+                    <el-dropdown-item>填写入驻信息</el-dropdown-item>
+                  </router-link>
+                  <router-link to="/Check">
+                    <el-dropdown-item>查询审核情况</el-dropdown-item>
+                  </router-link>
+                </el-dropdown-menu>
+              </el-dropdown>
             </li>
           </ul>
         </div>
@@ -174,7 +178,7 @@
 
           <el-menu-item index="/" style="font-size: 20px;color: #ff6700">首页</el-menu-item>
           <el-menu-item index="/goods"  @click="searchAll" style="font-size: 20px;color: #ff6700">全部商品</el-menu-item>
-          <el-menu-item index="/about" style="margin-right: 30px">关于我们</el-menu-item>
+         <!-- <el-menu-item index="/about" style="margin-right: 30px">关于我们</el-menu-item>-->
 
 
           <div class="so" style="margin-left: 250px">
@@ -229,20 +233,20 @@
               </p>
             </div>
           </div>
-          <div class="github">
+         <!-- <div class="github">
             <a href="https://github.com/hai-27/vue-store" target="_blank">
               <div class="github-but"></div>
             </a>
-          </div>
+          </div>-->
           <div class="mod_help">
             <p>
               <router-link to="/">首页</router-link>
               <span>|</span>
               <router-link to="/goods">全部商品</router-link>
-              <span>|</span>
-              <router-link to="/about">关于我们</router-link>
+             <!-- <span>|</span>-->
+              <!--<router-link to="/about">关于我们</router-link>-->
             </p>
-            <p class="coty">商城版权所有 &copy; 2012-2021</p>
+           <!-- <p class="coty">商城版权所有 &copy; 2012-2021</p>-->
           </div>
         </div>
       </el-footer>
@@ -331,7 +335,7 @@
       }
     },
     methods: {
-      ...mapActions(["setUser", "setShowLogin", "setShoppingCart"]),
+      ...mapActions(["setUser", "setShowLogin", "setShoppingCart","setDistInfo"]),
         //控制刷新页面
         reload (){
             this.isRouterAlive = false
@@ -351,7 +355,16 @@
         localStorage.setItem("user", "");
         // 清空vuex登录信息
         this.setUser("");
+        this.setDistInfo("");
         this.notifySucceed("成功退出登录");
+        this.$axios
+            .get(this.$target1+"/auth/logOut")
+            .catch(error=>
+                console.log(error)
+            )
+
+
+
       },
       // 接收注册子组件传过来的数据
       isRegister(val) {
@@ -385,10 +398,7 @@
         //点击购物车
        goShoppingCart(){
            // 跳转到shoppingcart组件页面
-           let routeUrl =this.$router.resolve(
-               {path: "/shoppingCart"}
-           );
-           window.open(routeUrl.href, '_blank');
+         this.$router.push({ path: '/shoppingCart'})
        },
         //鼠标悬浮我的购物车展示购物车预览
         getShopCartContent(){

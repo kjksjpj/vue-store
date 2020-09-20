@@ -3,16 +3,29 @@
 
 
         <!--品牌展示区域 及 价格升降序-->
-        <!--只有当点击三级分类的时候 才会显示这个区域 还没做-->
-        <div style="height: 33px;display: flex;"  >
-            <div class="title" style="width:8%;height:50px;margin-right: 10px;padding-left: 50px"><span class="tag-group__title">所有品牌：</span></div>
-            <ul v-for="item in productbrand"  :key="item.id">
-                <li style="float:left; list-style:none;margin:0px 10px 0px 0px;cursor: pointer" @click="getProductByBrandId(item.id)">
-                    <a class="category">{{item.name}}</a>
-                </li>
-            </ul>
+      <div style="background-color:#fbfdff;height:auto;display: flex;flex-direction: column;margin: 0px 0px 10px 0px;">
+          <div class="tag-group">
+            <ul v-for="item in productbrand" :key="item.id" style="margin-left: 50px">
 
-            <div style="margin: 0px 10px 0px 500px">
+              <li style="font-size: 15px;float:left; list-style:none;margin-left: 30px;color: #666;cursor: pointer" @click="getProductByBrandId(item.id)">
+                <a class="category">{{item.name}}</a>
+              </li>
+
+            </ul>
+          </div>
+
+          <span v-if="this.productbrand.length!=0" style="border-bottom:1px dashed #ddd;margin:10px 0 10px 0 "></span>
+
+          <div style="height: 33px;display: flex;margin-left: 5%" v-if="product.length>0" >
+            <ul >
+              <li style="font-size: 15px;float:left; list-style:none;color: #666;cursor: pointer" >
+                <span title="价格"  class="priceButton" href="javascript:void(0);" @click="searchPrice()">
+                    价格&nbsp;<span >{{this.priceflag}}</span></span>
+              </li>
+            </ul>
+          </div>
+
+         <!--   <div style="margin: 0px 10px 0px 500px">
                 <a href="javascript:;" class="curr" >
                     <span class="fs-tit" style="">价格</span>
                     <em class="fs-up" style="font-style: normal;">
@@ -20,9 +33,9 @@
                         <button @click="priceSort(2)"><i class="el-icon-caret-bottom"></i></button>
                     </em>
                 </a>
-            </div>
-        </div>
+            </div>-->
 
+      </div>
         <!--品牌展示区域END 及 价格升降序-->
 
 
@@ -37,7 +50,7 @@
 
 
             <!-- 分页 -->
-            <div class="pagination">
+            <div class="pagination" v-if="product.length>0">
                 <el-pagination
                         background
                         layout="prev, pager, next"
@@ -60,6 +73,8 @@
     export default {
         data() {
             return {
+              priceflag:'↑',
+              priceIndex:1,
                 showBrandAndPrice:false,
                 styleObject1: {
                     marginBottom: '10px',
@@ -183,7 +198,23 @@
                     )
 
             },
+          searchPrice(){
+            let flag=this.priceIndex
+            //升序
+            if (flag==1){
+              this.priceflag='↑'
+              this.priceIndex=2
+              this.product.sort((a,b)=>a.price-b.price)
+            }
+            //降序
+            if (flag==2){
+              this.priceflag='↓'
+              this.priceIndex=1
+              this.product.sort((a,b)=>b.price-a.price)
+            }
+            this.priceSearch="1"
 
+          },
             //价格升降序
             priceSort:function(flag){
                 if(flag==1){
@@ -254,6 +285,15 @@
 </script>
 
 <style >
+    .priceButton{
+      /*color: red;*/
+      display: block;
+      padding: 0 10px 0px;
+      line-height: 30px;
+      color: #666;
+      font-size: 14px;
+      background-color: #dec2a6;
+    }
     /* 价格升降序css*/
     a.curr {
         float: left;

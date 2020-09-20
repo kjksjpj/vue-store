@@ -8,7 +8,7 @@
 <template>
   <div id="myList" class="myList" >
     <ul>
-      <li v-for="item in list"  :key="item.skuId" style="margin: 3px;">
+      <li v-for="item in list"  :key="item.skuId" style="margin: 20px;">
         <!--<el-popover placement="top">
           <p>确定删除吗？</p>
           <div style="text-align: right; margin: 10px 0 0">
@@ -20,21 +20,21 @@
          <div @click="getProductDetails(item.skuId)" style="cursor: pointer">
         <!--<router-link :to="{ path: '/goods/details', query: {productID:item.skuId} }">-->
           <img :src="item.pic" alt />
-          <h3 v-html="item.title"></h3>
+          <h3 style="color: black;font-size: 16px">
+           <a v-html="item.title"></a>
+          </h3>
           <p>
             <span><em style="font-style: normal;"></em>{{item.price|priceFormat}}</span>
-        <!--    <span
-              v-show="item.product_price != item.product_selling_price"
-              class="del"
-            >{{item.price}}元</span>-->
+
           </p>
-            <h3>{{item.storeName}}</h3>
+<!--            <h3>{{item.storeName}}</h3>-->
           <div class="p-icons" id="J_pro_100012749298" data-done="1" style="margin-top:10px;overflow: hidden;zoom: 1;height: 18px;padding-left: 70px">
-            <i class="goods-icons J-picon-tips J-picon-fix" data-idx="1" data-tips="京东自营，品质保障" style="float: left;
+            <i class="goods-icons J-picon-tips J-picon-fix" data-idx="1" data-tips="京东自营，品质保障"
+               style="float: left;
                   height: 16px;
                   line-height: 16px;
                   padding: 0 3px;
-                  margin-right: 3px;
+                  /*margin-right: 3px;*/
                   overflow: hidden;
                   text-align: center;
                   font-style: normal;
@@ -43,20 +43,20 @@
                   color: #FFF;
                   cursor: default;
                   border-radius: 2px;">
-              自营
+              推荐
             </i>
             <i class="goods-icons4 J-picon-tips" style="border-color:#4d88ff;color:#4d88ff;float: left;
                   height: 14px;
                   line-height: 14px;padding: 0 3px;
                   border: 1px solid #e23a3a;
-                  margin-right: 3px;
+                  margin-left: 10px;
                   overflow: hidden;
-                  text-align: center;
+                  text-align: right;
                   font-style: normal;
                   font-size: 12px;
                   border-radius: 2px;
                   " data-idx="1" data-tips="品质服务，放心购物">
-              放心购
+              {{item.storeName}}
             </i>
           </div>
         <!--</router-link>-->
@@ -96,15 +96,7 @@ export default {
   methods: {
     getProductDetails(product_id){
       // 跳转到Details组件页面
-      let routeUrl =this.$router.resolve(
-              {path: "/goods/details",
-                query: {
-                  productID: product_id
-                }
-              }
-      );
-      window.open(routeUrl.href, '_blank');
-
+      this.$router.push({ path: "/goods/details", query: {productID: product_id}})
     },
     deleteCollect(product_id) {
       this.$axios
@@ -143,8 +135,8 @@ export default {
   border:1px solid transparent;
   z-index: 1;
   float: left;
-  width: 234px;
-  height: 280px;
+  width: 200px;
+  height: 250px;
   padding: 10px 0;
   margin: 0 0 14.5px 13.7px;
   background-color: white;
@@ -162,9 +154,9 @@ export default {
 }
 .myList ul li img {
   display: block;
-  width: 160px;
-  height: 160px;
-  background: url(../assets/imgs/placeholder.png) no-repeat 50%;
+  width: 170px;
+  height: 170px;
+  /*background: url(../assets/imgs/placeholder.png) no-repeat 50%;*/
   margin: 0 auto;
 }
 .myList ul li h2 {

@@ -59,7 +59,14 @@
                                   </div>
                                   <div style="box-sizing: border-box;
                                          overflow: hidden;margin-left: 100px;position: relative;width: 900px;height: auto;">
-                                      <div class="comment-star star5"></div>
+
+                                      <!--<div class="comment-star star5"></div>-->
+                                    <!--星星-->
+                                    <el-rate class="delivery-review-start"
+                                             disabled
+                                             v-model='item.star'
+                                            >
+                                    </el-rate>
                                       <div style="height: auto;overflow: hidden;margin-bottom: 18px" >
                                           <span v-if="item.content!='string'" style="font-size: 14px;line-height: 180%;color: #3F3F3F;word-wrap: break-word;overflow: hidden">{{item.content}}</span>
                                       </div>
@@ -99,11 +106,12 @@
         props: ["spuId"],
         data(){
           return{
-
                 comment:[
                      /* {memberIcon:'',memberNickName:'呵呵',content:'这个产品非常好',resources:'视频或者图片评论',createTime:'2020.6.8',spuAttributes:'组团属性:sffdfddfgfd'},
                       {memberIcon:'',memberNickName:'哈哈',content:'这个产品干是否发货发电机发电v下半场v徐州深刻的反思开发',resources:'视频或者图片评论122344',createTime:'2020.8.8',spuAttributes:'组团属性:2535253454534'}*/
                       ],
+                //星星
+                star: "",
           }
         },
         created(){
@@ -116,6 +124,7 @@
                         .get(this.$target1+"/pms/spucomment/queryComment/" + this.spuId)
                         .then(response =>{
                             this.comment = response.data.data;
+
                             //获取评论图片资源
                           /*  this.comment.forEach((item)=>{
                                 console.log(item.resources)

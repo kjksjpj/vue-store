@@ -8,12 +8,14 @@
 export default {
   state: {
     user: "", // 登录的用户
-    showLogin: false, // 用于控制是否显示登录组件
+    showLogin: false ,// 用于控制是否显示登录组件
+    token:'',
     //分销信息
     distInfo: {
       member: '',
       amount: ''
     },
+    //是否加入分销
     isJoinDist: false
   },
   getters: {
@@ -37,6 +39,15 @@ export default {
     setShowLogin (state, data) {
       state.showLogin = data;
     },
+
+    set_token(state, token) {
+      state.token = token
+      sessionStorage.token = token
+    },
+    del_token(state) {
+      state.token = ''
+      sessionStorage.removeItem('token')
+    },
     setDistInfo(state, data) {
       state.distInfo = data;
     },
@@ -50,6 +61,12 @@ export default {
     },
     setShowLogin ({ commit }, data) {
       commit('setShowLogin', data);
+    },
+    set_token ({ commit }, token) {
+      commit('set_token', token);
+    },
+    del_token ({ commit }, token) {
+      commit('del_token', token);
     },
     setDistInfo ({ commit }, data) {
       commit('setDistInfo', data);

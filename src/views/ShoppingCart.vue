@@ -31,7 +31,7 @@
                         size="mini" @click="visible = false"
                 >取消</el-button>
               </div>
-              <el-button slot="reference" style="margin-left: 20px">删除选中商品</el-button>
+              <!--<el-button slot="reference" style="margin-left: 20px">删除选中商品</el-button>-->
             </el-popover>
           </div>
           <div class="pro-img"></div>
@@ -58,7 +58,7 @@
             {{item.title}}
             </a>
           </div>
-          <div class="pro-price">{{item.price}}元</div>
+          <div class="pro-price">{{item.price|priceFormat}}元</div>
           <div class="pro-num">
             <!--这里写$event即可 下面就能获取到当前的值了-->
             <el-input-number
@@ -69,7 +69,7 @@
               :max="1000"
             ></el-input-number>
           </div>
-          <div class="pro-total pro-total-in" >{{item.price*item.count}}元</div>
+          <div class="pro-total pro-total-in" >{{item.price*item.count|priceFormat}}元</div>
           <div class="pro-action">
             <el-popover >
               <p>确定删除吗？</p>
@@ -105,7 +105,7 @@
         <div class="cart-bar-right">
           <span>
             <span class="total-price-title">合计：</span>
-            <span class="total-price">{{getTotalPrice}}元</span>
+            <span class="total-price">{{getTotalPrice|priceFormat}}元</span>
           </span>
           <router-link :to="checkNum > 0 ? '/confirmOrder' : ''">
             <div :class="checkNum > 0 ? 'btn-primary' : 'btn-primary-disabled'">去结算</div>

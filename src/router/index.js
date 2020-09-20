@@ -18,6 +18,10 @@ const routes = [
     component: () => import('../views/Home.vue')
   },
   {
+    path: '/login',
+    name: 'MyLogin ',
+    component: () => import('../components/MyLogin.vue')
+  },  {
     path: '/error',
     name: 'Error',
     component: () => import('../components/Error.vue')
@@ -33,14 +37,6 @@ const routes = [
     component: () => import('../views/GoodsByKeyword.vue'),
   },
   {
-    path: '/distribution',
-    name: 'Distribution',
-    component: () => import('../views/Distribution'),
-    meta: {
-      requireAuth: true // 需要验证登录状态
-    },
-  },
-  {
     path: '/about',
     name: 'About',
     component: () => import('../views/About.vue')
@@ -49,8 +45,7 @@ const routes = [
     path: '/goods/details',
     name: 'Details',
     component: () => import('../views/Details.vue')
-  },
-  {
+  },{
     path: '/goods/details/reviews',
     name: 'reviews',
     component: () => import('../components/ProductReviews1')
@@ -149,9 +144,17 @@ const routes = [
         // UserProfile 会被渲染在 User 的 <router-view> 中
         path: 'profile',
         component: () => import('../components/Profile'),
-      /*  meta: {
+        meta: {
         requireAuth: true // 需要验证登录状态
-        }*/
+        }
+
+      },
+      {
+        path: 'distribution',
+        component: () => import('../components/Distribution'),
+        meta: {
+          requireAuth: true // 需要验证登录状态
+        }
 
       },
       {
@@ -160,7 +163,10 @@ const routes = [
       },
     /*  {
         path: 'orderList',
-        component: () => import('../views/OrderList')
+        component: () => import('../views/OrderList'),
+        meta: {
+          requireAuth: true // 需要验证登录状态
+        }
       },*/
       {
         path: 'favorite',
@@ -181,7 +187,6 @@ const routes = [
 ]
 
 const router = new Router({
-  mode: 'history',  //去掉url中的#
   // base: '/dist',
   // mode: 'history',
   routes

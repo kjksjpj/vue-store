@@ -7,7 +7,7 @@
             <span style="font-size:20px;">商家入驻</span>
             <!--如果未登录 会跳转到登录界面 已登陆 则跳转到入驻界面-->
             <router-link to="/settle">
-                <button type="button" style="margin-left: 25%;background-color: #b31d28;border: none; color: white;padding: 15px 32px;
+                <button type="button" style="margin-left:27%;margin-bottom:20px;background-color: #b31d28;border: none; color: white;padding: 15px 32px;
                     text-align: center;
                     text-decoration: none;
                     display: inline-block;
@@ -19,8 +19,8 @@
         </div>
 
         <!--中间轮播图-->
-        <div class="block" style="margin: 30px 10px 10px 20px">
-            <el-carousel  height="250px" :interval="3000" arrow="always" style="width:1225px">
+        <div class="block">
+            <el-carousel  height="250px" :interval="3000" arrow="always" style="width:1225px;margin:auto">
                 <el-carousel-item v-for="item in imgList" :key="item.name">
                     <img :src="item.src" style="height:100%;width:100%;" alt="图片丢失了" :title="item.title" />
                 </el-carousel-item>
@@ -28,8 +28,8 @@
         </div>
 
         <!--下部入驻流程-->
-        <div class="bottom" style="background-color: #f7f7f7">
-             <div style="text-align: center;border-bottom: #9d9d9d;margin: 40px 0px 40px 0px;font-size: 30px;">
+        <div class="bottom" style="background-color: #f7f7f7;margin:0 auto;">
+             <div style="text-align: center;border-bottom: #9d9d9d;margin: 30px auto;font-size: 30px;">
                  <p style="padding: 30px 0px 20px 0px">入驻流程</p>
              </div>
 
